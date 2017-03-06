@@ -1,5 +1,7 @@
 package Data;
 
+import Data.Comparator.Sizecomparator;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.File;
@@ -10,12 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by Marcel on 05.03.2017.
  */
-public class Node {
+public class Node{
     private final String name;
     private long size=-1;
     private final Node[] subNodes;
@@ -113,6 +117,21 @@ public class Node {
         return size.get();
     }
 
+    public void sortNodesSize(){
+        Sizecomparator sc=new Sizecomparator();
+        Arrays.sort(subNodes,sc);
+        for(Node n:subNodes){
+            sortNodesSize();
+        }
+    }
+
+    public void sortNodes(Comparator sc){
+        Arrays.sort(subNodes,sc);
+        for(Node n:subNodes){
+            sortNodes(sc);
+        }
+    }
+
     public static long getSizeofFiles(File f){
         long size=0;
         for(File cur:f.listFiles()){
@@ -140,6 +159,10 @@ public class Node {
                     Node node=new Node(input);
                     node.calculateSubnodes();
                     node.calculateSize();
+                    for(Node n:node.getSubNodes()){
+                        System.out.println(n.getOwnPath());
+                    }
+                    System.out.println(node.getSize());
                 } else {
                 }
                 fs.setVisible(false);
