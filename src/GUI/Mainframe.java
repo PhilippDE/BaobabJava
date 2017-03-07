@@ -83,6 +83,7 @@ public class Mainframe extends JFrame{
                     supernode.calculateSize();
                     supernode.sortNodesSize();
                 }
+                sunview.drawNode(supernode);
             }
         });
 
@@ -103,7 +104,12 @@ public class Mainframe extends JFrame{
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        new Mainframe();
+        Mainframe mf=new Mainframe();
+        //mf.sunview.drawArc(45,0,0);
+        //mf.sunview.drawArc(45,30,1);
+        //mf.sunview.drawArc(45,60,2);
+        //mf.sunview.drawArc(45,90,3);
+        //mf.sunview.drawArc(45,120,4);
         return;
     }
 

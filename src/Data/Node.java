@@ -121,14 +121,18 @@ public class Node{
         Sizecomparator sc=new Sizecomparator();
         Arrays.sort(subNodes,sc);
         for(Node n:subNodes){
-            sortNodesSize();
+            n.sortNodes(sc);
         }
     }
 
     public void sortNodes(Comparator sc){
         Arrays.sort(subNodes,sc);
-        for(Node n:subNodes){
-            sortNodes(sc);
+        if(subNodes.length!=0) {
+            for (Node n : subNodes) {
+                n.sortNodes(sc);
+            }
+        }else{
+            return;
         }
     }
 
