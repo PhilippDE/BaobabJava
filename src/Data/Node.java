@@ -1,6 +1,7 @@
 package Data;
 
 import Data.Comparator.Sizecomparator;
+import Data.Comparator.SizecomparatorInversed;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -117,24 +118,7 @@ public class Node{
         return size.get();
     }
 
-    public void sortNodesSize(){
-        Sizecomparator sc=new Sizecomparator();
-        Arrays.sort(subNodes,sc);
-        for(Node n:subNodes){
-            n.sortNodes(sc);
-        }
-    }
 
-    public void sortNodes(Comparator sc){
-        Arrays.sort(subNodes,sc);
-        if(subNodes.length!=0) {
-            for (Node n : subNodes) {
-                n.sortNodes(sc);
-            }
-        }else{
-            return;
-        }
-    }
 
     public static long getSizeofFiles(File f){
         long size=0;
@@ -177,4 +161,30 @@ public class Node{
         }
     }
 
+    public void sortNodesSize(){
+        Sizecomparator sc=new Sizecomparator();
+        Arrays.sort(subNodes,sc);
+        for(Node n:subNodes){
+            n.sortNodes(sc);
+        }
+    }
+
+    public void sortNodes(Comparator sc){
+        Arrays.sort(subNodes,sc);
+        if(subNodes.length!=0) {
+            for (Node n : subNodes) {
+                n.sortNodes(sc);
+            }
+        }else{
+            return;
+        }
+    }
+
+    public void sortNodesSizeReversed() {
+        SizecomparatorInversed sc=new SizecomparatorInversed();
+        Arrays.sort(subNodes,sc);
+        for(Node n:subNodes) {
+            n.sortNodes(sc);
+        }
+    }
 }

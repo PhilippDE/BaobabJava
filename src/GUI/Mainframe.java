@@ -81,7 +81,7 @@ public class Mainframe extends JFrame{
                 if(supernode!=null){
                     supernode.calculateSubnodes();
                     supernode.calculateSize();
-                    supernode.sortNodesSize();
+                    supernode.sortNodesSizeReversed();
                 }
                 sunview.drawNode(supernode);
             }
