@@ -82,6 +82,7 @@ public class Mainframe extends JFrame{
                     supernode.calculateSubnodes();
                     supernode.calculateSize();
                     supernode.sortNodesSizeReversed();
+                    SunviewPanel.setColorsBasedOnAngle(supernode);
                 }
                 sunview.drawNode(supernode);
             }

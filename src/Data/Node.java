@@ -5,6 +5,7 @@ import Data.Comparator.SizecomparatorInversed;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -25,6 +26,8 @@ public class Node{
     private long size=-1;
     private final Node[] subNodes;
     private final File ownPath;
+    private Color ownColor;
+
 
     public String getName() {
         return name;
@@ -45,6 +48,10 @@ public class Node{
     public File getOwnPath() {
         return ownPath;
     }
+
+    public Color getOwnColor(){return ownColor;}
+
+    public void setOwnColor(Color ownColor){this.ownColor=ownColor;}
 
     public Node(File file){
         this.name=file.getName();

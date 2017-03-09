@@ -3,10 +3,12 @@ package GUI;
 import Data.Node;
 
 import javax.swing.*;
+import javax.xml.ws.RequestWrapper;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImagingOpException;
 
 /**
  * Created by Marcel on 06.03.2017.
@@ -28,7 +30,7 @@ public class SunviewPanel {
                 }else{
                     size=rootPanel.getWidth();
                 }
-                g.drawImage(scale(buffer,size,size/buffer.getHeight()),0,0,null);
+                g.drawImage(scale(buffer,size,(double)size/(double)buffer.getHeight()),0,0,null);
             }
         };
     }
@@ -39,13 +41,63 @@ public class SunviewPanel {
     private final static double degreeOffset=3.5;
     private final static double degreeSpacer=2.6;
 
-    private final static double ringFactor=1.35;
+    private static double ringFactor=1.35;
 
-    private final static double layerThickness=50*ringFactor;
-    private final static double layerOffset=30*ringFactor;
+    private static double layerThickness=50*ringFactor;
+    private static double layerOffset=30*ringFactor;
 
+
+    private void updateLayers(){
+        int size;
+        if(rootPanel.getWidth()==rootPanel.getHeight()){
+            size=rootPanel.getWidth();
+        }else if(rootPanel.getWidth()>rootPanel.getHeight()){
+            size=rootPanel.getHeight();
+        }else{
+            size=rootPanel.getWidth();
+        }
+        ringFactor=(double)size/(double)600;
+        layerThickness=50*ringFactor;
+        layerOffset=30*ringFactor;
+    }
+
+    public static void setColorsBasedOnAngle(Node supernode) {
+        double[] angles=new double[supernode.getSubNodes().length];
+        double angleCount=0;
+        for(int i=0;i< angles.length;i++){
+            double percentage=(((double)supernode.getSubNodes()[i].getSize()/(double)supernode.getSize()));
+            angleCount+=percentage;
+            angles[i]=angleCount;
+            if(i!=0) {
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1]);
+            }else{
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor(0,1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0],0);
+            }
+
+        }
+    }
+
+    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start){
+        double[] angles=new double[supernode.getSubNodes().length];
+        double angleCount=start;
+        for(int i=0;i< angles.length;i++){
+            double percentage=(((double)supernode.getSubNodes()[i].getSize()/(double)supernode.getSize())*maximum);
+            angleCount+=percentage;
+            angles[i]=angleCount;
+            if(i!=0) {
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1]);
+            }else{
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)start,1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0]-(float) start,(float)start);
+            }
+        }
+    }
 
     public void drawNode(Node node){
+        updateLayers();
         System.out.print("Started drawing!");
         int size;
         if(rootPanel.getWidth()==rootPanel.getHeight()){
@@ -62,7 +114,7 @@ public class SunviewPanel {
         for(Node n:node.getSubNodes()){
             radius=360*((double)n.getSize())/((double)node.getSize())-degreeOffset;
             if(radius>degreeSpacer) {
-                drawArc(radius, offset, 0);
+                drawArc(radius, offset, 0,n.getOwnColor());
                 drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
                 offset += radius + degreeOffset;
             }
@@ -76,7 +128,7 @@ public class SunviewPanel {
             for (Node n : node.getSubNodes()) {
                 radius = 360 * percentage*((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
                 if(radius>degreeSpacer) {
-                    drawArc(radius, offset, layer);
+                    drawArc(radius, offset, layer,n.getOwnColor());
                     drawNode(layer + 1, n, offset, (((double) n.getSize()) / ((double) node.getSize())) * percentage);
                     offset += radius + degreeOffset;
                 }
@@ -84,7 +136,7 @@ public class SunviewPanel {
         }
     }
 
-    public void drawArc(double degree,double degreeOffset,int layer){
+    public void drawArc(double degree,double degreeOffset,int layer,Color color){
         //Calculating where the arc would end in
         double totalAngle=degree+degreeOffset;
 
@@ -243,8 +295,16 @@ public class SunviewPanel {
         //g2.drawLine(westbound,0,westbound,yCenter*2);
 
 
-
-        g2.setColor(Color.red);
+        if(color==null){
+            color=Color.orange;
+        }
+        Color draw=color;
+        float[] value=Color.RGBtoHSB(draw.getRed(),draw.getGreen(),draw.getBlue(),null);
+        for(int i=0;i<layer;i++){
+            value[2]-=0.1;
+        }
+        draw=Color.getHSBColor(value[0],value[1],value[2]);
+        g2.setColor(draw);
         g2Panel.setColor(Color.darkGray);
         for(int i=westbound-1;i<=eastbound;i++){
             for(int j=northbound-1;j<=southbound;j++){
@@ -306,8 +366,12 @@ public class SunviewPanel {
             dbi = new BufferedImage(sizeDestination, sizeDestination, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = dbi.createGraphics();
             AffineTransform at = AffineTransform.getScaleInstance(fSize, fSize);
-            AffineTransformOp atp=new AffineTransformOp(at,AffineTransformOp.TYPE_BILINEAR);
-            dbi=atp.filter(source,dbi);
+            try {
+                AffineTransformOp atp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+                dbi=atp.filter(source,dbi);
+            }catch(ImagingOpException ignored){
+                ignored.printStackTrace();
+            }
         }
         return dbi;
     }
