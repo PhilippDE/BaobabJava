@@ -105,11 +105,6 @@ public class Mainframe extends JFrame{
             e.printStackTrace();
         }
         Mainframe mf=new Mainframe();
-        //mf.sunview.drawArc(45,0,0);
-        //mf.sunview.drawArc(45,30,1);
-        //mf.sunview.drawArc(45,60,2);
-        //mf.sunview.drawArc(45,90,3);
-        //mf.sunview.drawArc(45,120,4);
         return;
     }
 
