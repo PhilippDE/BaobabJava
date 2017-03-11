@@ -3,7 +3,6 @@ package GUI;
 import Data.Node;
 
 import javax.swing.*;
-import javax.xml.ws.RequestWrapper;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -15,47 +14,75 @@ import java.awt.image.ImagingOpException;
  */
 public class SunviewPanel {
     private JPanel rootPanel;
+    private JPanel drawPanel;
+    private JPanel infoPanel;
+    private JButton update;
+    private JLabel nameLabel;
+    private JLabel sizeLabel;
+    private JFormattedTextField layerCountField;
 
     private void createUIComponents() {
-        rootPanel=new JPanel(){
-            @Override
-            public void paintComponent(Graphics g){
-                super.paintComponent(g);
-
-                int size;
-                if(rootPanel.getWidth()==rootPanel.getHeight()){
-                    size=rootPanel.getWidth();
-                }else if(rootPanel.getWidth()>rootPanel.getHeight()){
-                    size=rootPanel.getHeight();
-                }else{
-                    size=rootPanel.getWidth();
-                }
-                g.drawImage(scale(buffer,size,(double)size/(double)buffer.getHeight()),0,0,null);
+        rootPanel=new JPanel();
+        drawPanel=new JPanel(){
+        @Override
+        public void paintComponent(Graphics g){
+            super.paintComponent(g);
+            int size;
+            if(drawPanel.getWidth()==drawPanel.getHeight()){
+                size=drawPanel.getWidth();
+            }else if(drawPanel.getWidth()>drawPanel.getHeight()){
+                size=drawPanel.getHeight();
+            }else{
+                size=drawPanel.getWidth();
             }
+            g.drawImage(scale(buffer,size,(double)size/(double)buffer.getHeight()),0,0,null);
+        }
         };
+
+        infoPanel=new JPanel();
+        update=new JButton();
+        update.addActionListener(e->{
+             layerCount=(Integer)layerCountField.getValue();
+             updateLayers();
+             drawPanel.repaint();
+             setColorsBasedOnAngle(this.superNode);
+             drawNode(superNode);
+             setNodeInformation(superNode.getName(),String.valueOf(superNode.getSize()));
+        });
+        nameLabel=new JLabel();
+        sizeLabel=new JLabel();
+        layerCountField=new JFormattedTextField();
+        layerCountField.setValue(7);
+        layerCountField.setText("Layers: ");
+
     }
 
+    public void setNodeInformation(String name,String size){
+        this.nameLabel.setText("Folder: "+ name);
+        this.sizeLabel.setText("Size: "+size);
+    }
 
     BufferedImage buffer=new BufferedImage(400,400,BufferedImage.TYPE_INT_ARGB);
 
-    private final static double degreeOffset=3.5;
-    private final static double degreeSpacer=2.6;
+    private final static double degreeOffset=3.0;
+    private final static double degreeSpacer=3.0;
 
     private static double ringFactor=1.35;
-    private static int layerCount=10;
+    private static int layerCount=7;
 
     private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
     private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
 
+    private Node superNode;
 
     private void updateLayers(){
         int size;
-        if(rootPanel.getWidth()==rootPanel.getHeight()){
-            size=rootPanel.getWidth();
-        }else if(rootPanel.getWidth()>rootPanel.getHeight()){
-            size=rootPanel.getHeight();
+        if(drawPanel.getWidth()==drawPanel.getHeight()){
+            size=drawPanel.getWidth();
+        }else if(drawPanel.getWidth()>drawPanel.getHeight()){
+            size=drawPanel.getHeight();
         }else{
-            size=rootPanel.getWidth();
+            size=drawPanel.getWidth();
         }
         ringFactor=(double)size/(double)600;
         layerThickness=50*ringFactor*(5.0/(double)layerCount);
@@ -66,7 +93,6 @@ public class SunviewPanel {
         int count=0;
 
         for(int i=0;i<supernode.getSubNodes().length;i++){
-
             if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
                 count++;
             }
@@ -90,7 +116,6 @@ public class SunviewPanel {
     public static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
         if(layer<6) {
             int count=0;
-
             for(int i=0;i<supernode.getSubNodes().length;i++){
 
                 if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
@@ -115,18 +140,19 @@ public class SunviewPanel {
     }
 
     public void drawNode(Node node){
+        this.superNode=node;
         updateLayers();
         System.out.print("Started drawing!");
         int size;
-        if(rootPanel.getWidth()==rootPanel.getHeight()){
-            size=rootPanel.getWidth();
-        }else if(rootPanel.getWidth()>rootPanel.getHeight()){
-            size=rootPanel.getHeight();
+        if(drawPanel.getWidth()==drawPanel.getHeight()){
+            size=drawPanel.getWidth();
+        }else if(drawPanel.getWidth()>drawPanel.getHeight()){
+            size=drawPanel.getHeight();
         }else{
-            size=rootPanel.getWidth();
+            size=drawPanel.getWidth();
         }
         buffer=new BufferedImage(size,size,BufferedImage.TYPE_INT_ARGB);
-        rootPanel.repaint();
+        drawPanel.repaint();
         double offset=0;
         double radius=0;
         for(Node n:node.getSubNodes()){
@@ -300,7 +326,7 @@ public class SunviewPanel {
         //        " \n Maxdistance: "+maxDistance+" Mindistance: "+minDistance);
 
         Graphics2D g2=(Graphics2D)buffer.getGraphics();
-        Graphics2D g2Panel=(Graphics2D)rootPanel.getGraphics();
+        Graphics2D g2Panel=(Graphics2D)drawPanel.getGraphics();
 
         //Shift the values to the center of image
         northbound+=yCenter;
@@ -373,6 +399,7 @@ public class SunviewPanel {
             return layer*layerThickness+layerThickness+layerOffset;
         }
     }
+
     /**
      * scale image
      *
