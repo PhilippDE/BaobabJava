@@ -20,6 +20,7 @@ public class Mainframe extends JFrame{
     private Node supernode;
 
     public Mainframe(){
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setContentPane(this.rootPanel);
         this.setSize(1920,1080);
         this.pack();
@@ -30,27 +31,24 @@ public class Mainframe extends JFrame{
     private void createUIComponents() {
         rootPanel=new JPanel();
         chooseDirectoy=new JButton();
-        chooseDirectoy.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fs = new JFileChooser(new File("c:\\documents"));
-                fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                fs.setDialogTitle("save");
-                //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
-                int returnVal = fs.showSaveDialog(null);
-                switch (returnVal) {
-                    case JFileChooser.APPROVE_OPTION:
-                        File input = fs.getSelectedFile();
-                        if (input.exists()) {
-                            supernode=new Node(input);
-                        } else {
-                        }
-                        fs.setVisible(false);
-                        break;
-                    case JFileChooser.CANCEL_OPTION:
-                        fs.setVisible(false);
-                        break;
-                }
+        chooseDirectoy.addActionListener(e -> {
+            JFileChooser fs = new JFileChooser(new File("c:"));
+            fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fs.setDialogTitle("save");
+            //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
+            int returnVal = fs.showSaveDialog(null);
+            switch (returnVal) {
+                case JFileChooser.APPROVE_OPTION:
+                    File input = fs.getSelectedFile();
+                    if (input.exists()) {
+                        supernode=new Node(input);
+                    } else {
+                    }
+                    fs.setVisible(false);
+                    break;
+                case JFileChooser.CANCEL_OPTION:
+                    fs.setVisible(false);
+                    break;
             }
         });
 

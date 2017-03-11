@@ -42,9 +42,10 @@ public class SunviewPanel {
     private final static double degreeSpacer=2.6;
 
     private static double ringFactor=1.35;
+    private static int layerCount=10;
 
-    private static double layerThickness=50*ringFactor;
-    private static double layerOffset=30*ringFactor;
+    private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
+    private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
 
 
     private void updateLayers(){
@@ -57,12 +58,20 @@ public class SunviewPanel {
             size=rootPanel.getWidth();
         }
         ringFactor=(double)size/(double)600;
-        layerThickness=50*ringFactor;
-        layerOffset=30*ringFactor;
+        layerThickness=50*ringFactor*(5.0/(double)layerCount);
+        layerOffset=30*ringFactor*(5.0/(double)layerCount);
     }
 
     public static void setColorsBasedOnAngle(Node supernode) {
-        double[] angles=new double[supernode.getSubNodes().length];
+        int count=0;
+
+        for(int i=0;i<supernode.getSubNodes().length;i++){
+
+            if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
+                count++;
+            }
+        }
+        double[] angles=new double[count];
         double angleCount=0;
         for(int i=0;i< angles.length;i++){
             double percentage=(((double)supernode.getSubNodes()[i].getSize()/(double)supernode.getSize()));
@@ -70,28 +79,37 @@ public class SunviewPanel {
             angles[i]=angleCount;
             if(i!=0) {
                 supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1]);
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1],1);
             }else{
                 supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor(0,1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0],0);
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0],0,1);
             }
-
         }
     }
 
-    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start){
-        double[] angles=new double[supernode.getSubNodes().length];
-        double angleCount=start;
-        for(int i=0;i< angles.length;i++){
-            double percentage=(((double)supernode.getSubNodes()[i].getSize()/(double)supernode.getSize())*maximum);
-            angleCount+=percentage;
-            angles[i]=angleCount;
-            if(i!=0) {
-                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1]);
-            }else{
-                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)start,1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0]-(float) start,(float)start);
+    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
+        if(layer<6) {
+            int count=0;
+
+            for(int i=0;i<supernode.getSubNodes().length;i++){
+
+                if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
+                    count++;
+                }
+            }
+            double percentagePerNode = (maximum) / (double) (count);
+
+            for (int i = 0; i < count; i++) {
+                if (i != 0) {
+                    supernode.getSubNodes()[i].setOwnColor(
+                            Color.getHSBColor((float) ((float) (i) * percentagePerNode) + (float) start, 1, 1));
+                    setColorsBasedOnAngle(
+                            supernode.getSubNodes()[i],percentagePerNode,
+                            start+(double)i*percentagePerNode,layer+1);
+                } else {
+                    supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float) start, 1, 1));
+                    setColorsBasedOnAngle(supernode.getSubNodes()[0],percentagePerNode, start,layer+1);
+                }
             }
         }
     }
@@ -114,6 +132,7 @@ public class SunviewPanel {
         for(Node n:node.getSubNodes()){
             radius=360*((double)n.getSize())/((double)node.getSize())-degreeOffset;
             if(radius>degreeSpacer) {
+                System.out.println((double)n.getSize()/((double)node.getSize()));
                 drawArc(radius, offset, 0,n.getOwnColor());
                 drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
                 offset += radius + degreeOffset;
@@ -122,14 +141,15 @@ public class SunviewPanel {
     }
 
     private void drawNode(int layer,Node node,double offset_,double percentage){
-        if(layer<5) {
+        if(layer<layerCount) {
             double offset = offset_;
             double radius = 0;
             for (Node n : node.getSubNodes()) {
                 radius = 360 * percentage*((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
                 if(radius>degreeSpacer) {
                     drawArc(radius, offset, layer,n.getOwnColor());
-                    drawNode(layer + 1, n, offset, (((double) n.getSize()) / ((double) node.getSize())) * percentage);
+                    drawNode(layer + 1, n, offset,
+                            (((double) n.getSize()) / ((double) node.getSize())) * percentage);
                     offset += radius + degreeOffset;
                 }
             }
@@ -250,7 +270,8 @@ public class SunviewPanel {
             else if(degreeOffset<270){
                 northbound=(int)(Math.sin(Math.toRadians(270))*maxDistance);
                 eastbound=(int)(Math.cos(Math.toRadians(totalAngle))*maxDistance);
-                if(Math.abs(Math.sin(Math.toRadians(totalAngle))*minDistance)<Math.abs(Math.sin(Math.toRadians(degreeOffset))*minDistance)){
+                if(Math.abs(Math.sin(Math.toRadians(totalAngle))*minDistance)<
+                        Math.abs(Math.sin(Math.toRadians(degreeOffset))*minDistance)){
                     southbound=(int)(Math.sin(Math.toRadians(totalAngle))*minDistance);
                 }else{
                     southbound=(int)(Math.sin(Math.toRadians(degreeOffset))*minDistance);
@@ -301,7 +322,7 @@ public class SunviewPanel {
         Color draw=color;
         float[] value=Color.RGBtoHSB(draw.getRed(),draw.getGreen(),draw.getBlue(),null);
         for(int i=0;i<layer;i++){
-            value[2]-=0.1;
+            value[2]-=0.1*(5.0/(double)layerCount);
         }
         draw=Color.getHSBColor(value[0],value[1],value[2]);
         g2.setColor(draw);

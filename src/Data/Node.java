@@ -74,17 +74,16 @@ public class Node{
         }
     }
 
-
-
-    public void calculateSize(){
-        for(Node n:subNodes){
-            if(n.getSize()==-1){
-                n.calculateSize();
+    public void calculateSize() {
+        if (this.size == -1){
+            for (Node n : subNodes) {
+                if (n.getSize() == -1) {
+                     n.calculateSize();
+                }
+                this.size += n.getSize();
             }
-            this.size+=n.getSize();
+            this.size += getSizeofFiles(this.ownPath);
         }
-        this.size+=getSizeofFiles(this.ownPath);
-
     }
 
     public static int getSubdirectoryCount(File f){
@@ -124,8 +123,6 @@ public class Node{
 
         return size.get();
     }
-
-
 
     public static long getSizeofFiles(File f){
         long size=0;
