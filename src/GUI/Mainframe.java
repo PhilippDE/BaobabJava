@@ -83,6 +83,7 @@ public class Mainframe extends JFrame{
                     SunviewPanel.setColorsBasedOnAngle(supernode);
                 }
                 sunview.drawNode(supernode);
+                treeview.showNode(supernode);
             }
         });
 
