@@ -138,6 +138,21 @@ public class Node{
         return size;
     }
 
+    /***
+     * Checks how many files the folder contains.
+     * @param folder Folder to get the count of files from.
+     * @return Count of files in the given folder.
+     */
+    public static int getFilesCount(File folder) {
+        int files = 0;
+        for(File f : folder.listFiles()) {
+            if(f.isFile()) {
+                files++;
+            }
+        }
+        return files;
+    }
+
     public static void main(String[] args){
         JFileChooser fs = new JFileChooser(new File("c:\\documents"));
         fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

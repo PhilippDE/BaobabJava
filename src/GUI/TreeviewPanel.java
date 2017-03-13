@@ -26,6 +26,7 @@ public class TreeviewPanel {
 
         DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node.getName());
         addSubnodesToTree(node, treeNode);
+        addFilesToTree(node, treeNode);
         JTree tree = new JTree(treeNode);
 
         // it should be possible to scroll when the tree is too long
@@ -37,7 +38,7 @@ public class TreeviewPanel {
     }
 
     /***
-     * Adds the subnodes of the given Node to the given DefaultMutableTreeNode.
+     * Adds the subnodes and files of the given Node to the given DefaultMutableTreeNode.
      * When a subnode contains subnodes too these also get added.
      * @param node Node which subnodes should be added.
      * @param treeNode DefaultMutableTreeNode where the nodes should be added to.
@@ -49,6 +50,13 @@ public class TreeviewPanel {
             if(n.getSubNodes().length > 0) {
                 addSubnodesToTree(n, newTreeNode);
             }
+            addFilesToTree(n, newTreeNode);
         }
+    }
+
+    private void addFilesToTree(Node node, DefaultMutableTreeNode treeNode) {
+        int filesCount = Node.getFilesCount(node.getOwnPath());
+        long sizeOfFiles = Node.getSizeofFiles(node.getOwnPath());
+        treeNode.add(new DefaultMutableTreeNode(filesCount + " Files with size " + sizeOfFiles));
     }
 }
