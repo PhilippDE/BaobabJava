@@ -27,6 +27,7 @@ public class Node{
     private final Node[] subNodes;
     private final File ownPath;
     private Color ownColor;
+    private Node parent;
 
 
     public String getName() {
@@ -59,11 +60,16 @@ public class Node{
         this.ownPath=file;
     }
 
+    public Node(File file, Node parent) {
+        this(file);
+        this.parent = parent;
+    }
+
 
     public void calculateSubnodes(){
         File[] subDirectories=getSubdirectories(this.ownPath);
         for(int i=0;i<subNodes.length;i++){
-            subNodes[i]=new Node(subDirectories[i]);
+            subNodes[i]=new Node(subDirectories[i], this);
         }
         if(this.subNodes.length<1){
             this.size=getSizefromPath(this.ownPath);
@@ -76,6 +82,7 @@ public class Node{
 
     public void calculateSize() {
         if (this.size == -1){
+            this.size = 0;
             for (Node n : subNodes) {
                 if (n.getSize() == -1) {
                      n.calculateSize();
@@ -205,5 +212,21 @@ public class Node{
         for(Node n:subNodes) {
             n.sortNodes(sc);
         }
+    }
+
+    public double getUsagePercentOfParent() {
+        if(parent == null) return 1;
+        long parentSize = parent.getSize();
+        long ownSize = getSize();
+        return (double)ownSize/parentSize;
+    }
+
+    /***
+     * Needed for the DefaultMutableTreeNodes in TreeviewPanel.
+     * @return Name to display for the tree.
+     */
+    @Override
+    public String toString() {
+        return getName();
     }
 }

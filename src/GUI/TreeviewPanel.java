@@ -25,13 +25,13 @@ public class TreeviewPanel {
         rootPanel.removeAll();
 
         // create the first DefaultMutableTreeNode for the given supernode
-        DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node.getName());
+        DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
         // add the subnodes, their subnodes etc. and their files
         addSubnodesToTree(node, treeNode);
         // add the files of the supernode
         addFilesToTree(node, treeNode);
         // create the JTree with the DefaultMutableTreeNode of the supernode
-        JTree tree = new JTree(treeNode);
+        Tree tree = new Tree(treeNode);
 
         // it should be possible to scroll when the tree is too long
         JScrollPane scrollTree = new JScrollPane(tree);
@@ -52,7 +52,7 @@ public class TreeviewPanel {
         // iterate through every subnode of the given node
         for(Node n : node.getSubNodes()) {
             // create a DefaultMutableTreeNode object for the subnode
-            DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n.getName());
+            DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
             // add the DefaultMutableTreeNode to the upper tree node
             treeNode.add(newTreeNode);
             // if the subnode contains subnodes add them too
