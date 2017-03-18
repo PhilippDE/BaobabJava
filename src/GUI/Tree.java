@@ -32,7 +32,7 @@ public class Tree extends JTree {
                 Color c = new Color(Color.HSBtoRGB((float)(1-percent)/3, 1, 1));
                 g.setColor(c);
                 int boxWidth = (int)((clipBounds.getWidth()/4) * percent);
-                g.fillRect((int)(clipBounds.getWidth()-boxWidth), (int)bounds.getY(), boxWidth, (int)bounds.getHeight());
+                g.fillRect((int)(clipBounds.getWidth()-boxWidth), (int)bounds.getY()+3, boxWidth, (int)bounds.getHeight()-3);
             }
         }
     }

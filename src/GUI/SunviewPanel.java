@@ -93,14 +93,14 @@ public class SunviewPanel {
         int count=0;
 
         for(int i=0;i<supernode.getSubNodes().length;i++){
-            if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
+            if(360*(supernode.getSubNodes()[i].getUsagePercentOfParent())-degreeOffset>degreeSpacer) {
                 count++;
             }
         }
         double[] angles=new double[count];
         double angleCount=0;
         for(int i=0;i< angles.length;i++){
-            double percentage=(((double)supernode.getSubNodes()[i].getSize()/(double)supernode.getSize()));
+            double percentage=supernode.getSubNodes()[i].getUsagePercentOfParent();
             angleCount+=percentage;
             angles[i]=angleCount;
             if(i!=0) {
