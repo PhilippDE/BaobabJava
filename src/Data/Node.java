@@ -213,20 +213,29 @@ public class Node{
      * @return the formated string
      */
     public String sizeFormated(){
-        if(this.size<Math.pow(1024,1)){
-            return this.size+"B";
-        }if(this.size<Math.pow(1024,2)) {
-            return round((double) this.size / (Math.pow(1024, 1)),2) + "KB";
-        }if(this.size<Math.pow(1024,3)) {
-            return round((double) this.size / (Math.pow(1024, 2)),2) + "MB";
-        }if(this.size<Math.pow(1024,4)) {
-            return round((double) this.size / (Math.pow(1024, 3)),2) + "GB";
-        }if(this.size<Math.pow(1024,5)) {
-            return round((double) this.size / (Math.pow(1024, 4)),2) + "TB";
-        }if(this.size<Math.pow(1024,6)) {
-            return round((double) this.size / (Math.pow(1024, 5)),2) + "PB";
+        return sizeFormated(this.size);
+    }
+
+    /***
+     * Calls the sizeFormated method with the given size and not the size of the node.
+     * @param size Size to format.
+     * @return the formated string
+     */
+    public static String sizeFormated(long size) {
+        if(size<Math.pow(1024,1)){
+            return size+"B";
+        }if(size<Math.pow(1024,2)) {
+            return round((double) size / (Math.pow(1024, 1)),2) + "KB";
+        }if(size<Math.pow(1024,3)) {
+            return round((double) size / (Math.pow(1024, 2)),2) + "MB";
+        }if(size<Math.pow(1024,4)) {
+            return round((double) size / (Math.pow(1024, 3)),2) + "GB";
+        }if(size<Math.pow(1024,5)) {
+            return round((double) size / (Math.pow(1024, 4)),2) + "TB";
+        }if(size<Math.pow(1024,6)) {
+            return round((double) size / (Math.pow(1024, 5)),2) + "PB";
         }else{
-            return this.size+"B";
+            return size+"B";
         }
     }
 

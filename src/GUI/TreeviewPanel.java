@@ -74,6 +74,6 @@ public class TreeviewPanel {
     private void addFilesToTree(Node node, DefaultMutableTreeNode treeNode) {
         int filesCount = Node.getFilesCount(node.getOwnPath());
         long sizeOfFiles = Node.getSizeofFiles(node.getOwnPath());
-        treeNode.add(new DefaultMutableTreeNode(filesCount + " Files with size " + sizeOfFiles));
+        treeNode.add(new DefaultMutableTreeNode(filesCount + " Files with size " + Node.sizeFormated(sizeOfFiles)));
     }
 }
