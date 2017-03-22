@@ -30,9 +30,11 @@ public class Tree extends JTree {
                 Rectangle clipBounds = g.getClipBounds();
                 double percent = node.getUsagePercentOfParent();
                 Color c = new Color(Color.HSBtoRGB((float)(1-percent)/3, 1, 1));
-                g.setColor(c);
+                g.setColor(node.getOwnColor());
                 int boxWidth = (int)((clipBounds.getWidth()/4) * percent);
-                g.fillRect((int)(clipBounds.getWidth()-boxWidth), (int)bounds.getY()+3, boxWidth, (int)bounds.getHeight()-3);
+                g.fillRect((int)(clipBounds.getWidth()-boxWidth)-3, (int)bounds.getY()+3, boxWidth, (int)bounds.getHeight()-5);
+                //g.setColor(Color.BLACK);
+                //g.drawRect((int)((clipBounds.getWidth())*0.75)-5, (int)bounds.getY(), (int)((clipBounds.getWidth())*0.25)+5, (int)bounds.getHeight());
             }
         }
     }

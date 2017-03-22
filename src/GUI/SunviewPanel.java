@@ -47,7 +47,7 @@ public class SunviewPanel {
              drawPanel.repaint();
              setColorsBasedOnAngle(this.superNode);
              drawNode(superNode);
-             setNodeInformation(superNode.getName(),String.valueOf(superNode.getSize()));
+             setNodeInformation(superNode.getName(),Node.sizeFormated(superNode.getSize()));
         });
         nameLabel=new JLabel();
         sizeLabel=new JLabel();
@@ -139,31 +139,35 @@ public class SunviewPanel {
         }
     }
 
-    public void drawNode(Node node){
-        this.superNode=node;
-        updateLayers();
-        System.out.print("Started drawing!");
-        int size;
-        if(drawPanel.getWidth()==drawPanel.getHeight()){
-            size=drawPanel.getWidth();
-        }else if(drawPanel.getWidth()>drawPanel.getHeight()){
-            size=drawPanel.getHeight();
-        }else{
-            size=drawPanel.getWidth();
-        }
-        buffer=new BufferedImage(size,size,BufferedImage.TYPE_INT_ARGB);
-        drawPanel.repaint();
-        double offset=0;
-        double radius=0;
-        for(Node n:node.getSubNodes()){
-            radius=360*((double)n.getSize())/((double)node.getSize())-degreeOffset;
-            if(radius>degreeSpacer) {
-                System.out.println((double)n.getSize()/((double)node.getSize()));
-                drawArc(radius, offset, 0,n.getOwnColor());
-                drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
-                offset += radius + degreeOffset;
+    public void drawNode(Node node) {
+        new Thread(() -> {
+            SunviewPanel.this.superNode=node;
+            updateLayers();
+            System.out.print("Started drawing!");
+            int size;
+            if(drawPanel.getWidth()==drawPanel.getHeight()) {
+                size = drawPanel.getWidth();
+            }else if(drawPanel.getWidth()>drawPanel.getHeight()) {
+                size = drawPanel.getHeight();
+            }else {
+                size = drawPanel.getWidth();
             }
-        }
+
+            buffer=new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            drawPanel.repaint();
+            double offset = 0;
+            double radius = 0;
+            for(Node n:node.getSubNodes()) {
+                radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
+                if (radius > degreeSpacer) {
+                    System.out.println((double) n.getSize() / ((double) node.getSize()));
+                    drawArc(radius, offset, 0, n.getOwnColor());
+                    drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
+                    offset += radius + degreeOffset;
+                }
+            }
+            SunviewPanel.this.rootPanel.repaint();
+    }).start();
     }
 
     private void drawNode(int layer,Node node,double offset_,double percentage){

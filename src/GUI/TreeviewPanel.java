@@ -21,25 +21,27 @@ public class TreeviewPanel {
      * @param node Node that should be shown.
      */
     public void showNode(Node node) {
-        // clear rootPanel because there might be another JTree from an analysis before
-        rootPanel.removeAll();
+        new Thread(()->{
+            // clear rootPanel because there might be another JTree from an analysis before
+            rootPanel.removeAll();
 
-        // create the first DefaultMutableTreeNode for the given supernode
-        DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
-        // add the subnodes, their subnodes etc. and their files
-        addSubnodesToTree(node, treeNode);
-        // add the files of the supernode
-        addFilesToTree(node, treeNode);
-        // create the JTree with the DefaultMutableTreeNode of the supernode
-        Tree tree = new Tree(treeNode);
+            // create the first DefaultMutableTreeNode for the given supernode
+            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
+            // add the subnodes, their subnodes etc. and their files
+            addSubnodesToTree(node, treeNode);
+            // add the files of the supernode
+            addFilesToTree(node, treeNode);
+            // create the JTree with the DefaultMutableTreeNode of the supernode
+            Tree tree = new Tree(treeNode);
 
-        // it should be possible to scroll when the tree is too long
-        JScrollPane scrollTree = new JScrollPane(tree);
-        scrollTree.setViewportView(tree);
+            // it should be possible to scroll when the tree is too long
+            JScrollPane scrollTree = new JScrollPane(tree);
+            scrollTree.setViewportView(tree);
 
-        // add the scrollable tree to the rootPanel
-        rootPanel.add(scrollTree);
-        rootPanel.validate();
+            // add the scrollable tree to the rootPanel
+            rootPanel.add(scrollTree);
+            rootPanel.validate();
+        }).start();
     }
 
     /***

@@ -17,7 +17,9 @@ public class Mainframe extends JFrame{
     private SunviewPanel sunview;
     private JButton analyzeButton;
 
-    private Node supernode;
+    private static Node supernode;
+
+    private boolean threadStarted=false;
 
     public Mainframe(){
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -76,21 +78,32 @@ public class Mainframe extends JFrame{
                             break;
                     }
                 }
-                if(supernode!=null){
-                    supernode.calculateSubnodes();
-                    supernode.calculateSize();
-                    supernode.sortNodesSizeReversed();
-                    SunviewPanel.setColorsBasedOnAngle(supernode);
+                Thread background=new Thread(()->{
+                    if(supernode!=null){
+                        supernode.calculateSubnodes();
+                        supernode.calculateSize();
+                        supernode.sortNodesSizeReversed();
+                        SunviewPanel.setColorsBasedOnAngle(supernode);
+                    }
+                    sunview.drawNode(supernode);
+                    sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated());
+                    treeview.showNode(supernode);
+                    threadStarted=false;
+                });
+                if(!threadStarted){
+                    threadStarted=true;
+                    background.start();
                 }
-                sunview.drawNode(supernode);
-                sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated());
-                treeview.showNode(supernode);
             }
         });
 
         treeview=new TreeviewPanel();
 
         sunview=new SunviewPanel();
+    }
+
+    public static Node getSupernode(){
+        return supernode;
     }
 
     public static void main(String[] args){
