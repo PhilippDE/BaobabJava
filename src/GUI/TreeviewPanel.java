@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * Created by Marcel on 06.03.2017.
  */
-public class TreeviewPanel {
+public class TreeviewPanel implements DataVisualizer{
     private JPanel rootPanel;
 
     private void createUIComponents() {
@@ -77,5 +77,10 @@ public class TreeviewPanel {
         int filesCount = Node.getFilesCount(node.getOwnPath());
         long sizeOfFiles = Node.getSizeofFiles(node.getOwnPath());
         treeNode.add(new DefaultMutableTreeNode(filesCount + " Files with size " + Node.sizeFormated(sizeOfFiles)));
+    }
+
+    @Override
+    public void displayClaculatingMesssage() {
+        //TODO: Implement this !
     }
 }

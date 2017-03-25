@@ -12,7 +12,7 @@ import java.awt.image.ImagingOpException;
 /**
  * Created by Marcel on 06.03.2017.
  */
-public class SunviewPanel {
+public class SunviewPanel implements DataVisualizer{
     private JPanel rootPanel;
     private JPanel drawPanel;
     private JPanel infoPanel;
@@ -428,5 +428,14 @@ public class SunviewPanel {
         return dbi;
     }
 
+    @Override
+    public void displayClaculatingMesssage() {
+        buffer=new BufferedImage(drawPanel.getWidth(),drawPanel.getHeight(),BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g=(Graphics2D)buffer.getGraphics();
+        g.setColor(Color.darkGray);
+        g.setFont(new Font("Arial",Font.BOLD,40));
+        g.drawString("Calculating Node",drawPanel.getWidth()/2-100,drawPanel.getHeight()/2-70);
+        rootPanel.repaint();
+    }
 }
 
