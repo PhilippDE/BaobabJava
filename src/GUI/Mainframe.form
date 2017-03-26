@@ -39,7 +39,6 @@
       <nested-form id="d20cf" form-file="GUI/SunviewPanel.form" binding="sunview" custom-create="true">
         <constraints>
           <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="9" fill="0" indent="1" use-parent-layout="false">
-            <minimum-size width="200" height="200"/>
             <preferred-size width="960" height="960"/>
           </grid>
         </constraints>

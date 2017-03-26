@@ -25,17 +25,19 @@ public class SunviewPanel implements DataVisualizer{
         rootPanel=new JPanel();
         drawPanel=new JPanel(){
         @Override
-        public void paintComponent(Graphics g){
-            super.paintComponent(g);
-            int size;
-            if(drawPanel.getWidth()==drawPanel.getHeight()){
-                size=drawPanel.getWidth();
-            }else if(drawPanel.getWidth()>drawPanel.getHeight()){
-                size=drawPanel.getHeight();
-            }else{
-                size=drawPanel.getWidth();
+        public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+            if (!startedRendering) {
+                int size;
+                if (drawPanel.getWidth() == drawPanel.getHeight()) {
+                    size = drawPanel.getWidth();
+                } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
+                    size = drawPanel.getHeight();
+                } else {
+                    size = drawPanel.getWidth();
+                }
+                g.drawImage(scale(buffer, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
             }
-            g.drawImage(scale(buffer,size,(double)size/(double)buffer.getHeight()),0,0,null);
         }
         };
 
@@ -69,6 +71,7 @@ public class SunviewPanel implements DataVisualizer{
 
     private static double ringFactor=1.35;
     private static int layerCount=7;
+    private boolean startedRendering=false;
 
     private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
     private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
@@ -81,8 +84,10 @@ public class SunviewPanel implements DataVisualizer{
             size=drawPanel.getWidth();
         }else if(drawPanel.getWidth()>drawPanel.getHeight()){
             size=drawPanel.getHeight();
-        }else{
+        }else if(drawPanel.getWidth()<drawPanel.getHeight()){
             size=drawPanel.getWidth();
+        }else{
+            size=100;
         }
         ringFactor=(double)size/(double)600;
         layerThickness=50*ringFactor*(5.0/(double)layerCount);
@@ -141,6 +146,7 @@ public class SunviewPanel implements DataVisualizer{
 
     public void drawNode(Node node) {
         new Thread(() -> {
+            startedRendering=true;
             SunviewPanel.this.superNode=node;
             updateLayers();
             System.out.print("Started drawing!");
@@ -166,6 +172,7 @@ public class SunviewPanel implements DataVisualizer{
                     offset += radius + degreeOffset;
                 }
             }
+            startedRendering=false;
             SunviewPanel.this.rootPanel.repaint();
     }).start();
     }
