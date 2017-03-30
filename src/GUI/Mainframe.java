@@ -21,6 +21,7 @@ public class Mainframe extends JFrame{
     private static Node supernode;
 
     private boolean threadStarted=false;
+    private boolean pathChangedSinceLastAnalysis = false;
 
     public Mainframe(){
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -44,6 +45,19 @@ public class Mainframe extends JFrame{
                 case JFileChooser.APPROVE_OPTION:
                     File input = fs.getSelectedFile();
                     if (input.exists()) {
+                        Node n = new Node(input);
+                        // check if the node hasn't changed
+                        if(supernode != null) {
+                            if(n.getOwnPath().getAbsolutePath().equals(supernode.getOwnPath().getAbsolutePath())) {
+                                // path hasn't changed
+                            } else {
+                                // path changed
+                                pathChangedSinceLastAnalysis = true;
+                            }
+                        } else {
+                            // path changed
+                            pathChangedSinceLastAnalysis = true;
+                        }
                         supernode=new Node(input);
                     } else {
                     }
@@ -78,6 +92,8 @@ public class Mainframe extends JFrame{
                         break;
                 }
             }
+            if(!pathChangedSinceLastAnalysis) return;
+            pathChangedSinceLastAnalysis = false;
             currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
             Thread background=new Thread(()->{
                 sunview.displayClaculatingMesssage();
