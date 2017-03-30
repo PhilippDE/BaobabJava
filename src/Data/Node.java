@@ -30,6 +30,10 @@ public class Node{
     private Color ownColor;
     private Node parent;
 
+    private double angleStart=0;
+    private double angleEnd=0;
+
+
     /**
      * Constructor using a file
      * @param file this nodes path
@@ -48,6 +52,18 @@ public class Node{
     public Node(File file, Node parent) {
         this(file);
         this.parent = parent;
+    }
+
+    /**
+     * Constructor using a file and parent node
+     * @param file this nodes path
+     * @param parent the parent node
+     */
+    public Node(File file, Node parent,double angleStart,double angleLength) {
+        this(file);
+        this.parent = parent;
+        this.angleStart=angleStart;
+        this.angleEnd=angleStart+angleLength;
     }
 
 
@@ -104,6 +120,14 @@ public class Node{
         return files;
     }
 
+    public double getAngleEnd() {
+        return angleEnd;
+    }
+
+    public double getAngleStart() {
+        return angleStart;
+    }
+
     public String getName() {
         return name;
     }
@@ -116,9 +140,14 @@ public class Node{
         return ownColor;
     }
 
+    public Node getParent() {
+        return parent;
+    }
+
     public long getSize() {
         return size;
     }
+
 
     /**
      * Returns the size of files in a given directory
@@ -198,6 +227,15 @@ public class Node{
         return (double) tmp / factor;
     }
 
+
+    public void setAngleEnd(double angleEnd) {
+        this.angleEnd = angleEnd;
+    }
+
+    public void setAngleStart(double angleStart) {
+        this.angleStart = angleStart;
+    }
+
     public void setSize(long size) {
         this.size = size;
     }
@@ -206,6 +244,9 @@ public class Node{
         this.ownColor=ownColor;
     }
 
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
     /**
      * Returns the size of the node with the suitable Byte prefix at the end e.g.:
      * size : 1048576

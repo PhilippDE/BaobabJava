@@ -4,6 +4,7 @@ import Data.Node;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -21,51 +22,6 @@ public class SunviewPanel implements DataVisualizer{
     private JLabel sizeLabel;
     private JFormattedTextField layerCountField;
 
-    private void createUIComponents() {
-        rootPanel=new JPanel();
-        drawPanel=new JPanel(){
-        @Override
-        public void paintComponent(Graphics g) {
-                super.paintComponent(g);
-            if (!startedRendering) {
-                int size;
-                if (drawPanel.getWidth() == drawPanel.getHeight()) {
-                    size = drawPanel.getWidth();
-                } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
-                    size = drawPanel.getHeight();
-                } else {
-                    size = drawPanel.getWidth();
-                }
-                g.drawImage(scale(buffer, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
-            }
-        }
-        };
-
-        infoPanel=new JPanel();
-        update=new JButton();
-        update.addActionListener(e->{
-             layerCount=(Integer)layerCountField.getValue();
-             updateLayers();
-             drawPanel.repaint();
-             setColorsBasedOnAngle(this.superNode);
-             drawNode(superNode);
-             setNodeInformation(superNode.getName(),Node.sizeFormated(superNode.getSize()));
-        });
-        nameLabel=new JLabel();
-        sizeLabel=new JLabel();
-        layerCountField=new JFormattedTextField();
-        layerCountField.setValue(7);
-        layerCountField.setText("Layers: ");
-
-    }
-
-    public void setNodeInformation(String name,String size){
-        this.nameLabel.setText("Folder: "+ name);
-        this.sizeLabel.setText("Size: "+size);
-    }
-
-    BufferedImage buffer=new BufferedImage(400,400,BufferedImage.TYPE_INT_ARGB);
-
     private final static double degreeOffset=3.0;
     private final static double degreeSpacer=3.0;
 
@@ -75,122 +31,73 @@ public class SunviewPanel implements DataVisualizer{
 
     private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
     private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
+    BufferedImage buffer=new BufferedImage(400,400,BufferedImage.TYPE_INT_ARGB);
+    private static final Font labelFont=new Font("",Font.PLAIN,16);
 
     private Node superNode;
 
-    private void updateLayers(){
-        int size;
-        if(drawPanel.getWidth()==drawPanel.getHeight()){
-            size=drawPanel.getWidth();
-        }else if(drawPanel.getWidth()>drawPanel.getHeight()){
-            size=drawPanel.getHeight();
-        }else if(drawPanel.getWidth()<drawPanel.getHeight()){
-            size=drawPanel.getWidth();
-        }else{
-            size=100;
-        }
-        ringFactor=(double)size/(double)600;
-        layerThickness=50*ringFactor*(5.0/(double)layerCount);
-        layerOffset=30*ringFactor*(5.0/(double)layerCount);
-    }
 
-    public static void setColorsBasedOnAngle(Node supernode) {
-        int count=0;
 
-        for(int i=0;i<supernode.getSubNodes().length;i++){
-            if(360*(supernode.getSubNodes()[i].getUsagePercentOfParent())-degreeOffset>degreeSpacer) {
-                count++;
-            }
-        }
-        double[] angles=new double[count];
-        double angleCount=0;
-        for(int i=0;i< angles.length;i++){
-            double percentage=supernode.getSubNodes()[i].getUsagePercentOfParent();
-            angleCount+=percentage;
-            angles[i]=angleCount;
-            if(i!=0) {
-                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1],1);
-            }else{
-                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor(0,1,1));
-                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0],0,1);
-            }
-        }
-    }
-
-    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
-        if(layer<6) {
-            int count=0;
-            for(int i=0;i<supernode.getSubNodes().length;i++){
-
-                if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
-                    count++;
+    private void createUIComponents() {
+        rootPanel=new JPanel();
+        drawPanel=new JPanel(){
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (!startedRendering) {
+                    int size;
+                    if (drawPanel.getWidth() == drawPanel.getHeight()) {
+                        size = drawPanel.getWidth();
+                    } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
+                        size = drawPanel.getHeight();
+                    } else {
+                        size = drawPanel.getWidth();
+                    }
+                    g.drawImage(scale(buffer, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
                 }
             }
-            double percentagePerNode = (maximum) / (double) (count);
-
-            for (int i = 0; i < count; i++) {
-                if (i != 0) {
-                    supernode.getSubNodes()[i].setOwnColor(
-                            Color.getHSBColor((float) ((float) (i) * percentagePerNode) + (float) start, 1, 1));
-                    setColorsBasedOnAngle(
-                            supernode.getSubNodes()[i],percentagePerNode,
-                            start+(double)i*percentagePerNode,layer+1);
-                } else {
-                    supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float) start, 1, 1));
-                    setColorsBasedOnAngle(supernode.getSubNodes()[0],percentagePerNode, start,layer+1);
-                }
+        };
+        drawPanel.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
             }
-        }
-    }
 
-    public void drawNode(Node node) {
-        new Thread(() -> {
-            startedRendering=true;
-            SunviewPanel.this.superNode=node;
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if(superNode!=null)
+                    setNodeInformation(extractNode(extractArcLevel(e.getX(),e.getY())));
+            }
+        });
+
+        infoPanel=new JPanel();
+        update=new JButton();
+        update.addActionListener(e->{
+            layerCount=(Integer)layerCountField.getValue();
             updateLayers();
-            System.out.print("Started drawing!");
-            int size;
-            if(drawPanel.getWidth()==drawPanel.getHeight()) {
-                size = drawPanel.getWidth();
-            }else if(drawPanel.getWidth()>drawPanel.getHeight()) {
-                size = drawPanel.getHeight();
-            }else {
-                size = drawPanel.getWidth();
-            }
-
-            buffer=new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             drawPanel.repaint();
-            double offset = 0;
-            double radius = 0;
-            for(Node n:node.getSubNodes()) {
-                radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
-                if (radius > degreeSpacer) {
-                    System.out.println((double) n.getSize() / ((double) node.getSize()));
-                    drawArc(radius, offset, 0, n.getOwnColor());
-                    drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
-                    offset += radius + degreeOffset;
-                }
-            }
-            startedRendering=false;
-            SunviewPanel.this.rootPanel.repaint();
-    }).start();
-    }
+            setColorsBasedOnAngle(this.superNode);
+            drawNode(superNode);
+            setNodeInformation(superNode.getName(),Node.sizeFormated(superNode.getSize()));
+        });
 
-    private void drawNode(int layer,Node node,double offset_,double percentage){
-        if(layer<layerCount) {
-            double offset = offset_;
-            double radius = 0;
-            for (Node n : node.getSubNodes()) {
-                radius = 360 * percentage*((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
-                if(radius>degreeSpacer) {
-                    drawArc(radius, offset, layer,n.getOwnColor());
-                    drawNode(layer + 1, n, offset,
-                            (((double) n.getSize()) / ((double) node.getSize())) * percentage);
-                    offset += radius + degreeOffset;
-                }
-            }
-        }
+        //Preventing labels from growing when text's to large
+        nameLabel=new JLabel();
+        nameLabel.setFont(labelFont);
+        nameLabel.setMinimumSize(new Dimension(180,35));
+        nameLabel.setPreferredSize(new Dimension(180,35));
+        nameLabel.setMaximumSize(new Dimension(180,35));
+
+        sizeLabel=new JLabel();
+        sizeLabel.setFont(labelFont);
+        sizeLabel.setMinimumSize(new Dimension(180,35));
+        sizeLabel.setPreferredSize(new Dimension(180,35));
+        sizeLabel.setMaximumSize(new Dimension(180,35));
+
+
+        layerCountField=new JFormattedTextField();
+        layerCountField.setValue(7);
+        layerCountField.setText("Layers: ");
+
     }
 
     public void drawArc(double degree,double degreeOffset,int layer,Color color){
@@ -248,7 +155,7 @@ public class SunviewPanel implements DataVisualizer{
                 }
                 westbound=(int)(Math.cos(Math.toRadians(totalAngle))*maxDistance);
             }
-        //Ends in third quadrant
+            //Ends in third quadrant
         }else if(totalAngle<=270){
             //Starts in first quadrant
             if(degreeOffset<90){
@@ -395,12 +302,116 @@ public class SunviewPanel implements DataVisualizer{
         }
     }
 
-    private static double getLayerStart(int layer){
-        if(layer==0){
-            return layerOffset;
-        }else{
-            return layer*layerThickness+layerOffset+5;
+    public void drawNode(Node node) {
+        new Thread(() -> {
+            startedRendering=true;
+            SunviewPanel.this.superNode=node;
+            updateLayers();
+            int size;
+            if(drawPanel.getWidth()==drawPanel.getHeight()) {
+                size = drawPanel.getWidth();
+            }else if(drawPanel.getWidth()>drawPanel.getHeight()) {
+                size = drawPanel.getHeight();
+            }else {
+                size = drawPanel.getWidth();
+            }
+
+            buffer=new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            drawPanel.repaint();
+            double offset = 0;
+            double radius = 0;
+            for(Node n:node.getSubNodes()) {
+                radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
+                if (radius > degreeSpacer) {
+                    n.setAngleStart(offset);
+                    n.setAngleEnd(offset+radius);
+                    drawArc(radius, offset, 0, n.getOwnColor());
+                    drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
+                    offset += radius + degreeOffset;
+                }
+            }
+            startedRendering=false;
+            SunviewPanel.this.rootPanel.repaint();
+        }).start();
+    }
+
+    private void drawNode(int layer,Node node,double offset_,double percentage){
+        if(layer<layerCount) {
+            double offset = offset_;
+            double radius = 0;
+            for (Node n : node.getSubNodes()) {
+                radius = 360 * percentage*((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
+                if(radius>degreeSpacer) {
+                    n.setAngleStart(offset);
+                    n.setAngleEnd(offset+radius);
+                    drawArc(radius, offset, layer,n.getOwnColor());
+                    drawNode(layer + 1, n, offset,
+                            (((double) n.getSize()) / ((double) node.getSize())) * percentage);
+                    offset += radius + degreeOffset;
+                }
+            }
         }
+    }
+
+    @Override
+    public void displayClaculatingMesssage() {
+        buffer=new BufferedImage(drawPanel.getWidth(),drawPanel.getHeight(),BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g=(Graphics2D)buffer.getGraphics();
+        g.setColor(Color.darkGray);
+        g.setFont(new Font("Arial",Font.BOLD,40));
+        g.drawString("Calculating Node",drawPanel.getWidth()/2-100,drawPanel.getHeight()/2-70);
+        rootPanel.repaint();
+    }
+
+    private double[] extractArcLevel(int x,int y){
+        double[] returnA=new double[2];
+        int xCenter=buffer.getHeight()/2;
+        int yCenter=buffer.getHeight()/2;
+        double distance=Math.sqrt(Math.pow(x-xCenter,2)+Math.pow(y-yCenter,2));
+        double angle=Math.asin(Math.abs((double)y-yCenter)/distance);
+        //1 & 2 quadrant
+        if(y>yCenter) {
+            //2 quadrant
+            if (x < xCenter) {
+                angle=Math.toRadians(90)-angle;
+                angle += Math.toRadians(90);
+            }
+        }
+        // 3 & 4 quadrant
+        else {
+            //3 quadrant
+            if (x > xCenter) {
+                angle=Math.toRadians(90)-angle;
+                angle += Math.toRadians(90);
+            }
+            angle+=Math.toRadians(180);
+        }
+        returnA[0]=Math.toDegrees(angle);
+        int layer = 0;
+        if(distance<layerOffset){
+            layer=-1;
+        }else {
+            distance -= layerOffset + 5;
+            while (distance > layerThickness) {
+                distance -= layerThickness;
+                layer++;
+            }
+        }
+        returnA[1]=layer;
+        return returnA;
+    }
+
+    private Node extractNode(double[] angleLayer){
+        Node mothernode=this.superNode;
+        for (int i = 0; i < angleLayer[1] + 1; i++) {
+            for (Node n : mothernode.getSubNodes()) {
+                if (n.getAngleStart() < angleLayer[0] && angleLayer[0] < n.getAngleEnd()) {
+                    mothernode = n;
+                    break;
+                }
+            }
+        }
+        return mothernode;
     }
 
     private static double getLayerEnd(int layer){
@@ -408,6 +419,14 @@ public class SunviewPanel implements DataVisualizer{
             return layerOffset+layerThickness;
         }else{
             return layer*layerThickness+layerThickness+layerOffset;
+        }
+    }
+
+    private static double getLayerStart(int layer){
+        if(layer==0){
+            return layerOffset;
+        }else{
+            return layer*layerThickness+layerOffset+5;
         }
     }
 
@@ -435,14 +454,79 @@ public class SunviewPanel implements DataVisualizer{
         return dbi;
     }
 
-    @Override
-    public void displayClaculatingMesssage() {
-        buffer=new BufferedImage(drawPanel.getWidth(),drawPanel.getHeight(),BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g=(Graphics2D)buffer.getGraphics();
-        g.setColor(Color.darkGray);
-        g.setFont(new Font("Arial",Font.BOLD,40));
-        g.drawString("Calculating Node",drawPanel.getWidth()/2-100,drawPanel.getHeight()/2-70);
-        rootPanel.repaint();
+    public static void setColorsBasedOnAngle(Node supernode) {
+        int count=0;
+
+        for(int i=0;i<supernode.getSubNodes().length;i++){
+            if(360*(supernode.getSubNodes()[i].getUsagePercentOfParent())-degreeOffset>degreeSpacer) {
+                count++;
+            }
+        }
+        double[] angles=new double[count];
+        double angleCount=0;
+        for(int i=0;i< angles.length;i++){
+            double percentage=supernode.getSubNodes()[i].getUsagePercentOfParent();
+            angleCount+=percentage;
+            angles[i]=angleCount;
+            if(i!=0) {
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float)angles[i-1],1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[i]-angles[i-1],angles[i-1],1);
+            }else{
+                supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor(0,1,1));
+                setColorsBasedOnAngle(supernode.getSubNodes()[i],angles[0],0,1);
+            }
+        }
     }
+
+    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
+        if(layer<6) {
+            int count=0;
+            for(int i=0;i<supernode.getSubNodes().length;i++){
+
+                if(360*((double)supernode.getSubNodes()[i].getSize())/((double)supernode.getSize())-degreeOffset>degreeSpacer) {
+                    count++;
+                }
+            }
+            double percentagePerNode = (maximum) / (double) (count);
+
+            for (int i = 0; i < count; i++) {
+                if (i != 0) {
+                    supernode.getSubNodes()[i].setOwnColor(
+                            Color.getHSBColor((float) ((float) (i) * percentagePerNode) + (float) start, 1, 1));
+                    setColorsBasedOnAngle(
+                            supernode.getSubNodes()[i],percentagePerNode,
+                            start+(double)i*percentagePerNode,layer+1);
+                } else {
+                    supernode.getSubNodes()[i].setOwnColor(Color.getHSBColor((float) start, 1, 1));
+                    setColorsBasedOnAngle(supernode.getSubNodes()[0],percentagePerNode, start,layer+1);
+                }
+            }
+        }
+    }
+
+    public void setNodeInformation(String name,String size){
+        this.nameLabel.setText(name);
+        this.sizeLabel.setText(size);
+    }
+    public void setNodeInformation(Node n){
+        this.nameLabel.setText(n.getName());
+        this.sizeLabel.setText(Node.sizeFormated(n.getSize()));
+    }
+    private void updateLayers(){
+        int size;
+        if(drawPanel.getWidth()==drawPanel.getHeight()){
+            size=drawPanel.getWidth();
+        }else if(drawPanel.getWidth()>drawPanel.getHeight()){
+            size=drawPanel.getHeight();
+        }else if(drawPanel.getWidth()<drawPanel.getHeight()){
+            size=drawPanel.getWidth();
+        }else{
+            size=100;
+        }
+        ringFactor=(double)size/(double)600;
+        layerThickness=50*ringFactor*(5.0/(double)layerCount);
+        layerOffset=30*ringFactor*(5.0/(double)layerCount);
+    }
+
 }
 
