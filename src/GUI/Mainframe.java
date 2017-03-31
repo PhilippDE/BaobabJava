@@ -3,6 +3,7 @@ package GUI;
 import Data.Node;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,7 +27,10 @@ public class Mainframe extends JFrame{
     public Mainframe(){
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setContentPane(this.rootPanel);
-        this.setSize(1920,1080);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setMinimumSize(new Dimension(960,540));
+        this.setPreferredSize(new Dimension(960,540));
+        this.setSize(new Dimension(960,540));
         this.pack();
         this.setVisible(true);
     }
@@ -83,6 +87,7 @@ public class Mainframe extends JFrame{
                         File input = fs.getSelectedFile();
                         if (input.exists()) {
                             supernode = new Node(input);
+                            pathChangedSinceLastAnalysis = true;
                         } else {
                         }
                         fs.setVisible(false);

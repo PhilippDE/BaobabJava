@@ -358,7 +358,7 @@ public class SunviewPanel implements DataVisualizer{
         buffer=new BufferedImage(drawPanel.getWidth(),drawPanel.getHeight(),BufferedImage.TYPE_INT_ARGB);
         Graphics2D g=(Graphics2D)buffer.getGraphics();
         g.setColor(Color.darkGray);
-        g.setFont(new Font("Arial",Font.BOLD,40));
+        g.setFont(new Font("Arial",Font.BOLD,35));
         g.drawString("Calculating Node",drawPanel.getWidth()/2-100,drawPanel.getHeight()/2-70);
         rootPanel.repaint();
     }
