@@ -23,7 +23,10 @@ public class TreeviewPanel implements DataVisualizer{
     public void showNode(Node node) {
         new Thread(()->{
             // clear rootPanel because there might be another JTree from an analysis before
+            System.out.println("Started thread TREE");
             rootPanel.removeAll();
+            rootPanel.revalidate();
+            rootPanel.repaint();
             // create the first DefaultMutableTreeNode for the given supernode
             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
             // add the subnodes, their subnodes etc. and their files

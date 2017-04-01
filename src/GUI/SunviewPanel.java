@@ -72,6 +72,26 @@ public class SunviewPanel implements DataVisualizer{
                     setNodeInformation(extractNode(extractArcLevel(e.getX(),e.getY())));
             }
         });
+        drawPanel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Node calcNode=extractNode(extractArcLevel(e.getX(),e.getY()));
+                if(superNode!=null&&superNode!=calcNode)
+                    calcNode.openInOSFileviewer();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {}
+
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
 
         infoPanel=new JPanel();
         update=new JButton();
@@ -319,8 +339,9 @@ public class SunviewPanel implements DataVisualizer{
      * Draws a given node to the buffer and drawpanel
      * @param node the node to be drawn
      */
-    public void drawNode(Node node) {
+    public void drawNode(Node node){
         new Thread(() -> {
+            System.out.println("Startet thread SUN");
             startedRendering=true;
             SunviewPanel.this.superNode=node;
             updateLayers();
@@ -439,15 +460,20 @@ public class SunviewPanel implements DataVisualizer{
      */
     private Node extractNode(double[] angleLayer){
         Node mothernode=this.superNode;
+        int counter=0;
         for (int i = 0; i < angleLayer[1] + 1; i++) {
             for (Node n : mothernode.getSubNodes()) {
                 if (n.getAngleStart() < angleLayer[0] && angleLayer[0] < n.getAngleEnd()) {
                     mothernode = n;
+                    counter++;
                     break;
                 }
             }
         }
-        return mothernode;
+        if(counter>angleLayer[1])
+            return mothernode;
+        else
+            return superNode;
     }
 
     /**
@@ -536,7 +562,6 @@ public class SunviewPanel implements DataVisualizer{
      * @param layer the layer of this node
      */
     private static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
-        if(layer<6) {
             int count=0;
             for(int i=0;i<supernode.getSubNodes().length;i++){
 
@@ -558,7 +583,6 @@ public class SunviewPanel implements DataVisualizer{
                     setColorsBasedOnAngle(supernode.getSubNodes()[0],percentagePerNode, start,layer+1);
                 }
             }
-        }
     }
 
     /**

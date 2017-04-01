@@ -4,8 +4,6 @@ import Data.Node;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -110,9 +108,9 @@ public class Mainframe extends JFrame{
                     supernode.sortNodesSizeReversed();
                     SunviewPanel.setColorsBasedOnAngle(supernode);
                 }
+                treeview.showNode(supernode);
                 sunview.drawNode(supernode);
                 sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated());
-                treeview.showNode(supernode);
                 threadStarted=false;
             });
             if(!threadStarted){

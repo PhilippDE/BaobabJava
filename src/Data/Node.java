@@ -165,7 +165,6 @@ public class Node{
         return size;
     }
 
-
     /**
      * Returns all files that are a subdirectory of the given file
      * @param f the file who's subdirectories are being returned
@@ -174,7 +173,6 @@ public class Node{
     public static File[] getSubdirectories(File f){
         return f.listFiles(File::isDirectory);
     }
-
 
     /**
      * Returns the number of subdirectories.
@@ -206,6 +204,19 @@ public class Node{
     }
 
     /**
+     * Opens this nodes file in the OS's default file viewer (e.g. Explorer in Windows)
+     */
+    public void openInOSFileviewer(){
+        System.out.println("Called method!");
+        try {
+            if(Desktop.isDesktopSupported())
+            Desktop.getDesktop().open(this.ownPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Rounds a number using the default round method (round down till 4, round up after 4)
      * @param value the value
      * @param places the number of places to round to
@@ -219,7 +230,6 @@ public class Node{
         long tmp = Math.round(value);
         return (double) tmp / factor;
     }
-
 
     public void setAngleEnd(double angleEnd) {
         this.angleEnd = angleEnd;
@@ -297,8 +307,6 @@ public class Node{
         }
     }
 
-
-
     /**
      * Sorts the nodes after size where the first node is the largest one
      */
@@ -309,7 +317,6 @@ public class Node{
             n.sortNodes(sc);
         }
     }
-
 
     /***
      * Needed for the DefaultMutableTreeNodes in TreeviewPanel.
