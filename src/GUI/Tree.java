@@ -38,7 +38,7 @@ public class Tree extends JTree {
                 //g.drawLine((int)(clipBounds.getWidth()*0.75-3), (int)bounds.getY(),(int)(clipBounds.getWidth()*0.75-3),(int)(bounds.getY()+bounds.getHeight()-5));
                 g.setColor(new Color(210,210,210));
                 g.drawRect((int)((clipBounds.getWidth())*0.75)-5, (int)bounds.getY()+3,
-                        (int)((clipBounds.getWidth())*0.25)+5, (int)bounds.getHeight()-6);
+                        (int)((clipBounds.getWidth())*0.25)+4, (int)bounds.getHeight()-6);
             }
         }
     }

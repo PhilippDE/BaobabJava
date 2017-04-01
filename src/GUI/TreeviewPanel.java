@@ -83,6 +83,9 @@ public class TreeviewPanel implements DataVisualizer{
 
     @Override
     public void displayClaculatingMesssage() {
+        rootPanel.removeAll();
+        rootPanel.revalidate();
+        rootPanel.repaint();
         Graphics2D g=(Graphics2D)rootPanel.getGraphics();
         g.setColor(Color.darkGray);
         g.setFont(new Font("Arial",Font.BOLD,35));
