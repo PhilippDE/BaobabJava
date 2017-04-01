@@ -3,25 +3,18 @@ package Data;
 import Data.Comparator.Sizecomparator;
 import Data.Comparator.SizecomparatorInversed;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Class for representing directories
  * Created by Marcel on 05.03.2017.
  */
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions,WeakerAccess,unused"})
 public class Node{
     private final String name;
     private long size=-1;
@@ -80,8 +73,8 @@ public class Node{
         if(this.subNodes.length<1){
             this.size=getSizeofFiles(this.ownPath);
         }else{
-            for(int i=0;i<subNodes.length;i++){
-                subNodes[i].calculateSubnodes();
+            for (Node subNode : subNodes) {
+                subNode.calculateSubnodes();
             }
         }
     }
@@ -151,8 +144,8 @@ public class Node{
 
     /**
      * Returns the size of files in a given directory
-     * @param f
-     * @return
+     * @param f the file representing the directory
+     * @return the size in byte (ONLY FILES, NO DIRECTORIES!)
      */
     public static long getSizeofFiles(File f){
         long size=0;
@@ -179,7 +172,7 @@ public class Node{
      * @return the array of files that are subdirectories
      */
     public static File[] getSubdirectories(File f){
-        return f.listFiles(file -> file.isDirectory());
+        return f.listFiles(File::isDirectory);
     }
 
 
@@ -290,8 +283,6 @@ public class Node{
             for (Node n : subNodes) {
                 n.sortNodes(sc);
             }
-        }else{
-            return;
         }
     }
 

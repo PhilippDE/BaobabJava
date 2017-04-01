@@ -1,6 +1,7 @@
 package GUI;
 
 import Data.Node;
+import com.sun.istack.internal.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,11 +24,12 @@ public class SunviewPanel implements DataVisualizer{
     private JFormattedTextField layerCountField;
 
     private final static double degreeOffset=3.0;
-    private final static double degreeSpacer=3.0;
+    private final static double degreeSpacer=1.5;
 
     private static double ringFactor=1.35;
     private static int layerCount=7;
     private boolean startedRendering=false;
+    private final static double layerBuffer=2;
 
     private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
     private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
@@ -37,7 +39,9 @@ public class SunviewPanel implements DataVisualizer{
     private Node superNode;
 
 
-
+    /**
+     * Creates the UI components
+     */
     private void createUIComponents() {
         rootPanel=new JPanel();
         drawPanel=new JPanel(){
@@ -100,7 +104,16 @@ public class SunviewPanel implements DataVisualizer{
 
     }
 
-    public void drawArc(double degree,double degreeOffset,int layer,Color color){
+    /**
+     * Draws an arc with a given degree, degree length , layer and color.
+     *
+     * The arc will bve drawn such that it goes from degree to degree+degreelength/degreeoffset
+     * @param degree the start degree value
+     * @param degreeOffset the angle that will be drawn
+     * @param layer the layer starting at 0 in the most inner layer
+     * @param color the color that will be used for drawing
+     */
+    public void drawArc(double degree,double degreeOffset,int layer,@Nullable Color color){
         //Calculating where the arc would end in
         double totalAngle=degree+degreeOffset;
 
@@ -302,6 +315,10 @@ public class SunviewPanel implements DataVisualizer{
         }
     }
 
+    /**
+     * Draws a given node to the buffer and drawpanel
+     * @param node the node to be drawn
+     */
     public void drawNode(Node node) {
         new Thread(() -> {
             startedRendering=true;
@@ -335,6 +352,13 @@ public class SunviewPanel implements DataVisualizer{
         }).start();
     }
 
+    /**
+     * Private method for recusrively drawing a node and its subnodes
+     * @param layer the layer of the passed node object
+     * @param node the node that will be drawn
+     * @param offset_ the offset of its mothernode
+     * @param percentage the percentage of its mothernode
+     */
     private void drawNode(int layer,Node node,double offset_,double percentage){
         if(layer<layerCount) {
             double offset = offset_;
@@ -363,6 +387,12 @@ public class SunviewPanel implements DataVisualizer{
         rootPanel.repaint();
     }
 
+    /**
+     * Returns the angle and layer for a given x and y coordinate
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return The array storing the information where: [0] = angle and [1] = the layer
+     */
     private double[] extractArcLevel(int x,int y){
         double[] returnA=new double[2];
         int xCenter=buffer.getHeight()/2;
@@ -391,7 +421,7 @@ public class SunviewPanel implements DataVisualizer{
         if(distance<layerOffset){
             layer=-1;
         }else {
-            distance -= layerOffset + 5;
+            distance -= layerOffset + layerBuffer;
             while (distance > layerThickness) {
                 distance -= layerThickness;
                 layer++;
@@ -401,6 +431,12 @@ public class SunviewPanel implements DataVisualizer{
         return returnA;
     }
 
+    /**
+     * Calculates and returns the node that covers the given angle value and is in the given layer
+     * @param angleLayer the array containing the information where the first index is the angle
+     *                   and the second index is the layer
+     * @return the Node that is at that position
+     */
     private Node extractNode(double[] angleLayer){
         Node mothernode=this.superNode;
         for (int i = 0; i < angleLayer[1] + 1; i++) {
@@ -414,6 +450,11 @@ public class SunviewPanel implements DataVisualizer{
         return mothernode;
     }
 
+    /**
+     * Returns the maximum distance from the center that is achievable for a given layer
+     * @param layer the layer starting at 0
+     * @return the maximum distance
+     */
     private static double getLayerEnd(int layer){
         if(layer==0){
             return layerOffset+layerThickness;
@@ -422,16 +463,21 @@ public class SunviewPanel implements DataVisualizer{
         }
     }
 
+    /**
+     * Returns the minimum distance from the center that has to be achieved for a given layer
+     * @param layer the layer starting at 0
+     * @return the minimum distance
+     */
     private static double getLayerStart(int layer){
         if(layer==0){
             return layerOffset;
         }else{
-            return layer*layerThickness+layerOffset+5;
+            return layer*layerThickness+layerOffset+layerBuffer;
         }
     }
 
     /**
-     * scale image
+     * Scales the image for a given pixel size and scaling factor
      *
      * @param source image to scale
      * @param sizeDestination width of destination image
@@ -454,6 +500,10 @@ public class SunviewPanel implements DataVisualizer{
         return dbi;
     }
 
+    /**
+     * Sets the color for a given node and all its subnodes
+     * @param supernode the mothernode/supernode
+     */
     public static void setColorsBasedOnAngle(Node supernode) {
         int count=0;
 
@@ -478,7 +528,14 @@ public class SunviewPanel implements DataVisualizer{
         }
     }
 
-    public static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
+    /**
+     * Sets the color for a given node and all its subnodes recursively
+     * @param supernode the mothernode/supernode
+     * @param maximum the maximum angle for this node
+     * @param start the start angle for this nodes mothernode
+     * @param layer the layer of this node
+     */
+    private static void setColorsBasedOnAngle(Node supernode,double maximum,double start,int layer){
         if(layer<6) {
             int count=0;
             for(int i=0;i<supernode.getSubNodes().length;i++){
@@ -504,14 +561,28 @@ public class SunviewPanel implements DataVisualizer{
         }
     }
 
+    /**
+     * Sets the name and size labels
+     * @param name the name that will be set
+     * @param size the size that will be set
+     */
     public void setNodeInformation(String name,String size){
         this.nameLabel.setText(name);
         this.sizeLabel.setText(size);
     }
+
+    /**
+     * Sets the name and size labels
+     * @param n the node that will be "written" on the labels
+     */
     public void setNodeInformation(Node n){
         this.nameLabel.setText(n.getName());
         this.sizeLabel.setText(Node.sizeFormated(n.getSize()));
     }
+
+    /**
+     * Updates the layerconstants. This should be called whenever the panel is rescaled
+     */
     private void updateLayers(){
         int size;
         if(drawPanel.getWidth()==drawPanel.getHeight()){

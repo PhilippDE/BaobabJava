@@ -5,6 +5,7 @@ import Data.Node;
 import java.util.Comparator;
 
 /**
+ * Sizecomparator for Nodes; The first Node is the smallest
  * Created by Marcel on 06.03.2017.
  */
 public class Sizecomparator implements Comparator<Node>{

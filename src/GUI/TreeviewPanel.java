@@ -24,7 +24,6 @@ public class TreeviewPanel implements DataVisualizer{
         new Thread(()->{
             // clear rootPanel because there might be another JTree from an analysis before
             rootPanel.removeAll();
-
             // create the first DefaultMutableTreeNode for the given supernode
             DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
             // add the subnodes, their subnodes etc. and their files
@@ -81,6 +80,10 @@ public class TreeviewPanel implements DataVisualizer{
 
     @Override
     public void displayClaculatingMesssage() {
-        //TODO: Implement this !
+        Graphics2D g=(Graphics2D)rootPanel.getGraphics();
+        g.setColor(Color.darkGray);
+        g.setFont(new Font("Arial",Font.BOLD,35));
+        g.drawString("Calculating Node",rootPanel.getWidth()/2-100,rootPanel.getHeight()/2-70);
+        rootPanel.repaint();
     }
 }
