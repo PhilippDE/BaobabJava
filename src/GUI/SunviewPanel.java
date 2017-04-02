@@ -38,6 +38,11 @@ public class SunviewPanel implements DataVisualizer{
 
     private Node superNode;
 
+    private TreeviewPanel treeviewPanel;
+
+    public SunviewPanel(TreeviewPanel treeviewPanel) {
+        this.treeviewPanel = treeviewPanel;
+    }
 
     /**
      * Creates the UI components
@@ -75,9 +80,13 @@ public class SunviewPanel implements DataVisualizer{
         drawPanel.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Node calcNode=extractNode(extractArcLevel(e.getX(),e.getY()));
-                if(superNode!=null&&superNode!=calcNode)
-                    calcNode.openInOSFileviewer();
+                Node calcNode = extractNode(extractArcLevel(e.getX(), e.getY()));
+                if(e.getButton() == MouseEvent.BUTTON2) {
+                    if (superNode != null && superNode != calcNode)
+                        calcNode.openInOSFileviewer();
+                } else {
+                    treeviewPanel.expandPath(calcNode);
+                }
             }
 
             @Override

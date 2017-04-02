@@ -121,7 +121,7 @@ public class Mainframe extends JFrame{
 
         treeview=new TreeviewPanel();
 
-        sunview=new SunviewPanel();
+        sunview=new SunviewPanel(treeview);
 
         currentPathLabel=new JLabel();
     }

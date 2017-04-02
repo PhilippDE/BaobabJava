@@ -3,6 +3,7 @@ package Data;
 import Data.Comparator.Sizecomparator;
 import Data.Comparator.SizecomparatorInversed;
 
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,8 @@ public class Node{
 
     private double angleStart=0;
     private double angleEnd=0;
+
+    private TreePath treePath;
 
 
     /**
@@ -325,5 +328,13 @@ public class Node{
     @Override
     public String toString() {
         return getName();
+    }
+
+    public TreePath getTreePath() {
+        return treePath;
+    }
+
+    public void setTreePath(TreePath treePath) {
+        this.treePath = treePath;
     }
 }

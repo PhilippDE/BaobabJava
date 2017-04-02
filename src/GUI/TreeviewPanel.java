@@ -4,13 +4,17 @@ import Data.Node;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by Marcel on 06.03.2017.
  */
 public class TreeviewPanel implements DataVisualizer{
     private JPanel rootPanel;
+    private Tree tree;
 
     private void createUIComponents() {
         rootPanel=new JPanel(new GridLayout(1, 1));
@@ -34,7 +38,7 @@ public class TreeviewPanel implements DataVisualizer{
             // add the files of the supernode
             addFilesToTree(node, treeNode);
             // create the JTree with the DefaultMutableTreeNode of the supernode
-            Tree tree = new Tree(treeNode);
+            tree = new Tree(treeNode);
 
             // it should be possible to scroll when the tree is too long
             JScrollPane scrollTree = new JScrollPane(tree);
@@ -59,6 +63,7 @@ public class TreeviewPanel implements DataVisualizer{
             DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
             // add the DefaultMutableTreeNode to the upper tree node
             treeNode.add(newTreeNode);
+            n.setTreePath(getPath(newTreeNode));
             // if the subnode contains subnodes add them too
             if(n.getSubNodes().length > 0) {
                 addSubnodesToTree(n, newTreeNode);
@@ -91,5 +96,23 @@ public class TreeviewPanel implements DataVisualizer{
         g.setFont(new Font("Arial",Font.BOLD,35));
         g.drawString("Calculating Node",rootPanel.getWidth()/2-100,rootPanel.getHeight()/2-70);
         rootPanel.repaint();
+    }
+
+    public void expandPath(Node node) {
+        tree.expandPath(node.getTreePath());
+    }
+
+    public static TreePath getPath(TreeNode treeNode) {
+        ArrayList<TreeNode> nodes = new ArrayList<>();
+        if (treeNode != null) {
+            nodes.add(treeNode);
+            treeNode = treeNode.getParent();
+            while (treeNode != null) {
+                nodes.add(0, treeNode);
+                treeNode = treeNode.getParent();
+            }
+        }
+
+        return nodes.isEmpty() ? null : new TreePath(nodes.toArray());
     }
 }
