@@ -99,7 +99,9 @@ public class TreeviewPanel implements DataVisualizer{
     }
 
     public void expandPath(Node node) {
-        tree.expandPath(node.getTreePath());
+        TreePath path = node.getTreePath();
+        tree.expandPath(path);
+        tree.scrollPathToVisible(path);
     }
 
     public static TreePath getPath(TreeNode treeNode) {
