@@ -1,6 +1,7 @@
 package GUI;
 
 import Data.Node;
+import Data.OSDependingData;
 import com.sun.istack.internal.Nullable;
 
 import javax.swing.*;
@@ -15,6 +16,8 @@ import java.awt.image.ImagingOpException;
  * Created by Marcel on 06.03.2017.
  */
 public class SunviewPanel implements DataVisualizer{
+    Sunpopup popupMenu=new Sunpopup();
+    private Node clickedNode=null;
     private JPanel rootPanel;
     private JPanel drawPanel;
     private JPanel infoPanel;
@@ -22,6 +25,7 @@ public class SunviewPanel implements DataVisualizer{
     private JLabel nameLabel;
     private JLabel sizeLabel;
     private JFormattedTextField layerCountField;
+    private JTextArea fullPathArea;
 
     private final static double degreeOffset=3.0;
     private final static double degreeSpacer=1.5;
@@ -40,6 +44,18 @@ public class SunviewPanel implements DataVisualizer{
 
     private TreeviewPanel treeviewPanel;
 
+
+
+    private class Sunpopup extends JPopupMenu{
+        @Override
+        public void show(Component c,int x,int y){
+            SunviewPanel.this.clickedNode = extractNode(extractArcLevel(x, y));
+            super.show(c,x,y);
+        }
+    }
+
+
+
     public SunviewPanel(TreeviewPanel treeviewPanel) {
         this.treeviewPanel = treeviewPanel;
     }
@@ -48,6 +64,18 @@ public class SunviewPanel implements DataVisualizer{
      * Creates the UI components
      */
     private void createUIComponents() {
+
+        popupMenu=new Sunpopup();
+
+        JMenuItem m=new JMenuItem("Open in "+ OSDependingData.getFileViewer());
+        m.setHorizontalAlignment(JMenuItem.LEFT);
+        m.addActionListener(e -> clickedNode.openInOSFileviewer());
+        popupMenu.add(m);
+        m=new JMenuItem("Detailed View ");
+        m.setHorizontalAlignment(JMenuItem.LEFT);
+        m.addActionListener(e -> clickedNode.createDetailedViewWindow());
+        popupMenu.add(m);
+
         rootPanel=new JPanel();
         drawPanel=new JPanel(){
             @Override
@@ -66,6 +94,7 @@ public class SunviewPanel implements DataVisualizer{
                 }
             }
         };
+        drawPanel.setComponentPopupMenu(popupMenu);
         drawPanel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -77,15 +106,13 @@ public class SunviewPanel implements DataVisualizer{
                     setNodeInformation(extractNode(extractArcLevel(e.getX(),e.getY())));
             }
         });
-        drawPanel.addMouseListener(new MouseListener() {
+        drawPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Node calcNode = extractNode(extractArcLevel(e.getX(), e.getY()));
-                if(e.getButton() == MouseEvent.BUTTON2) {
-                    if (superNode != null && superNode != calcNode)
-                        calcNode.openInOSFileviewer();
-                } else {
-                    treeviewPanel.expandPath(calcNode);
+                if(!e.isPopupTrigger()) {
+                    System.out.println("Updated");
+                    clickedNode = extractNode(extractArcLevel(e.getX(), e.getY()));
+                    treeviewPanel.expandPath(clickedNode);
                 }
             }
 
@@ -110,7 +137,7 @@ public class SunviewPanel implements DataVisualizer{
             drawPanel.repaint();
             setColorsBasedOnAngle(this.superNode);
             drawNode(superNode);
-            setNodeInformation(superNode.getName(),Node.sizeFormated(superNode.getSize()));
+            setNodeInformation(superNode.getName(),Node.sizeFormated(superNode.getSize()),superNode.getOwnPath().getAbsolutePath());
         });
 
         //Preventing labels from growing when text's to large
@@ -130,6 +157,13 @@ public class SunviewPanel implements DataVisualizer{
         layerCountField=new JFormattedTextField();
         layerCountField.setValue(7);
         layerCountField.setText("Layers: ");
+
+        fullPathArea=new JTextArea();
+        fullPathArea.setEditable(false);
+        fullPathArea.setLineWrap(true);
+        fullPathArea.setRows(1);
+        fullPathArea.setBackground(infoPanel.getBackground());
+
 
     }
 
@@ -599,9 +633,10 @@ public class SunviewPanel implements DataVisualizer{
      * @param name the name that will be set
      * @param size the size that will be set
      */
-    public void setNodeInformation(String name,String size){
+    public void setNodeInformation(String name,String size,String path){
         this.nameLabel.setText(name);
         this.sizeLabel.setText(size);
+        this.fullPathArea.setText(path);
     }
 
     /**
@@ -609,8 +644,7 @@ public class SunviewPanel implements DataVisualizer{
      * @param n the node that will be "written" on the labels
      */
     public void setNodeInformation(Node n){
-        this.nameLabel.setText(n.getName());
-        this.sizeLabel.setText(Node.sizeFormated(n.getSize()));
+        setNodeInformation(n.getName(),Node.sizeFormated(n.getSize()),n.getOwnPath().getAbsolutePath());
     }
 
     /**

@@ -10,6 +10,8 @@ import java.io.File;
  * Created by Marcel on 06.03.2017.
  */
 public class Mainframe extends JFrame{
+
+
     private JButton chooseDirectoy;
     private JPanel rootPanel;
     private TreeviewPanel treeview;
@@ -100,7 +102,7 @@ public class Mainframe extends JFrame{
             currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
             Thread background=new Thread(()->{
                 sunview.displayClaculatingMesssage();
-                sunview.setNodeInformation(supernode.getName(),"-calculating-");
+                sunview.setNodeInformation(supernode.getName(),"-calculating-",supernode.getOwnPath().getAbsolutePath());
                 treeview.displayClaculatingMesssage();
                 if(supernode!=null){
                     supernode.calculateSubnodes();
@@ -110,7 +112,7 @@ public class Mainframe extends JFrame{
                 }
                 treeview.showNode(supernode);
                 sunview.drawNode(supernode);
-                sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated());
+                sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated(),supernode.getOwnPath().getAbsolutePath());
                 threadStarted=false;
             });
             if(!threadStarted){

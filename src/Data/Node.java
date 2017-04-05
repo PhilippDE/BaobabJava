@@ -2,6 +2,7 @@ package Data;
 
 import Data.Comparator.Sizecomparator;
 import Data.Comparator.SizecomparatorInversed;
+import GUI.NodeView;
 
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -98,6 +99,14 @@ public class Node{
         }
     }
 
+    /**
+     * Creates a window that shows all information about this Node
+     */
+    public void createDetailedViewWindow(){
+        new NodeView(this);
+    }
+
+
     /***
      * Checks how many files the folder contains.
      * @param folder Folder to get the count of files from.
@@ -113,6 +122,26 @@ public class Node{
                 }
             }
         }catch (NullPointerException ignored){}
+        return files;
+    }
+
+    /***
+     * Checks how many files the folder contains.
+     * @return Count of files in the given folder.
+     */
+    public int getFilesCountRecursively() {
+        int files = 0;
+
+        try {
+            for (File f : this.getOwnPath().listFiles()) {
+                if (f.isFile()) {
+                    files++;
+                }
+            }
+        }catch (NullPointerException ignored){}
+        for(int i=0;i<this.subNodes.length;i++){
+            files+=this.subNodes[i].getFilesCountRecursively();
+        }
         return files;
     }
 
