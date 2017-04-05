@@ -94,7 +94,7 @@ public class SunviewPanel implements DataVisualizer{
                 }
             }
         };
-        drawPanel.setComponentPopupMenu(popupMenu);
+       // drawPanel.setComponentPopupMenu(popupMenu);
         drawPanel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -109,7 +109,7 @@ public class SunviewPanel implements DataVisualizer{
         drawPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!e.isPopupTrigger()) {
+                if(!e.isPopupTrigger()&&e.getButton()==MouseEvent.BUTTON1) {
                     System.out.println("Updated");
                     clickedNode = extractNode(extractArcLevel(e.getX(), e.getY()));
                     treeviewPanel.expandPath(clickedNode);

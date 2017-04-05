@@ -18,6 +18,7 @@ public class Mainframe extends JFrame{
     private SunviewPanel sunview;
     private JButton analyzeButton;
     private JLabel currentPathLabel;
+    private JLabel progressLabel;
 
     private static Node supernode;
 
@@ -105,15 +106,19 @@ public class Mainframe extends JFrame{
                 sunview.setNodeInformation(supernode.getName(),"-calculating-",supernode.getOwnPath().getAbsolutePath());
                 treeview.displayClaculatingMesssage();
                 if(supernode!=null){
-                    supernode.calculateSubnodes();
+                    supernode.calculateSubnodes(this.progressLabel);
+                    this.progressLabel.setText("Calculating sizes");
                     supernode.calculateSize();
+                    this.progressLabel.setText("Sorting nodes");
                     supernode.sortNodesSizeReversed();
+                    this.progressLabel.setText("Preparing visualization");
                     SunviewPanel.setColorsBasedOnAngle(supernode);
                 }
                 treeview.showNode(supernode);
                 sunview.drawNode(supernode);
                 sunview.setNodeInformation(supernode.getName(),supernode.sizeFormated(),supernode.getOwnPath().getAbsolutePath());
                 threadStarted=false;
+                this.progressLabel.setText("Ready");
             });
             if(!threadStarted){
                 threadStarted=true;

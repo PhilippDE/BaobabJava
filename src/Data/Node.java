@@ -4,6 +4,7 @@ import Data.Comparator.Sizecomparator;
 import Data.Comparator.SizecomparatorInversed;
 import GUI.NodeView;
 
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.File;
@@ -69,8 +70,9 @@ public class Node{
     /**
      * Calculates the subnodes of this node
      */
-    public void calculateSubnodes(){
+    public void calculateSubnodes(JLabel progress){
         File[] subDirectories=getSubdirectories(this.ownPath);
+        progress.setText("Mapping path: "+this.ownPath.getAbsolutePath());
         for(int i=0;i<subNodes.length;i++){
             subNodes[i]=new Node(subDirectories[i], this);
         }
@@ -78,7 +80,7 @@ public class Node{
             this.size=getSizeofFiles(this.ownPath);
         }else{
             for (Node subNode : subNodes) {
-                subNode.calculateSubnodes();
+                subNode.calculateSubnodes(progress);
             }
         }
     }
