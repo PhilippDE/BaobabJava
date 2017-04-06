@@ -18,6 +18,8 @@ public class TreeviewPanel implements DataVisualizer{
 
     private void createUIComponents() {
         rootPanel=new JPanel(new GridLayout(1, 1));
+        // rootPanel.setPreferredSize(new Dimension(GraphicsConstants.treeviewPrefferedFULLHDX,
+        //         GraphicsConstants.treeviewPrefferedFULLHDY));
     }
 
     /***
@@ -39,7 +41,8 @@ public class TreeviewPanel implements DataVisualizer{
             addFilesToTree(node, treeNode);
             // create the JTree with the DefaultMutableTreeNode of the supernode
             tree = new Tree(treeNode);
-
+            tree.setFont(GraphicsConstants.standardFont);
+            tree.setRowHeight(GraphicsConstants.treeRowHeight);
             // it should be possible to scroll when the tree is too long
             JScrollPane scrollTree = new JScrollPane(tree);
             scrollTree.setViewportView(tree);

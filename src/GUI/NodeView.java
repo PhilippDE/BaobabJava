@@ -15,16 +15,19 @@ public class NodeView extends JFrame{
     private JLabel sizeLabel;
     private JTextArea fullPathArea;
     private JLabel amountOfFiles;
-    private static final Font labelFont=new Font("",Font.PLAIN,12);
+    private JLabel folderLabelStatic;
+    private JLabel sizeLabelStatic;
+    private JLabel fullPathLabelStatic;
+    private JLabel filesPathStatic;
 
 
     public NodeView(Node node){
         java.awt.EventQueue.invokeLater(() -> {
             NodeView.this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             NodeView.this.setContentPane(NodeView.this.rootPanel);
-            NodeView.this.setMinimumSize(new Dimension(350,200));
-            NodeView.this.setPreferredSize(new Dimension(350,600));
-            NodeView.this.setSize(new Dimension(350,600));
+            NodeView.this.setMinimumSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX,GraphicsConstants.nodeViewerFULLHDY/2));
+            NodeView.this.setPreferredSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX,GraphicsConstants.nodeViewerFULLHDY/2));
+            NodeView.this.setSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX,GraphicsConstants.nodeViewerFULLHDY/2));
             NodeView.this.setTitle("Folder details: "+node.getName());
             nameLabel.setText(node.getName());
             sizeLabel.setText(Node.sizeFormated(node.getSize()));
@@ -39,24 +42,44 @@ public class NodeView extends JFrame{
     private void createUIComponents() {
         rootPanel=new JPanel();
         infoPanel=new JPanel();
+
         nameLabel=new JLabel();
-        nameLabel.setFont(labelFont);
-        nameLabel.setMinimumSize(new Dimension(180,35));
-        nameLabel.setPreferredSize(new Dimension(180,35));
-        nameLabel.setMaximumSize(new Dimension(180,35));
+        nameLabel.setFont(GraphicsConstants.standardFont);
+        nameLabel.setMinimumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        nameLabel.setPreferredSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        nameLabel.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
 
         sizeLabel=new JLabel();
-        sizeLabel.setFont(labelFont);
-        sizeLabel.setMinimumSize(new Dimension(180,35));
-        sizeLabel.setPreferredSize(new Dimension(180,35));
-        sizeLabel.setMaximumSize(new Dimension(180,35));
+        sizeLabel.setFont(GraphicsConstants.standardFont);
+        sizeLabel.setMinimumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        sizeLabel.setPreferredSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        sizeLabel.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
 
         fullPathArea=new JTextArea();
+        fullPathArea.setFont(GraphicsConstants.standardFont);
         fullPathArea.setEditable(false);
         fullPathArea.setLineWrap(true);
+        fullPathArea.setWrapStyleWord(true);
         fullPathArea.setBackground(infoPanel.getBackground());
 
         amountOfFiles=new JLabel();
+        amountOfFiles.setFont(GraphicsConstants.standardFont);
+        amountOfFiles.setMinimumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        amountOfFiles.setPreferredSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        amountOfFiles.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+
+
+        folderLabelStatic=new JLabel();
+        folderLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        sizeLabelStatic=new JLabel();
+        sizeLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        fullPathLabelStatic=new JLabel();
+        fullPathLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        filesPathStatic=new JLabel();
+        filesPathStatic.setFont(GraphicsConstants.standardFont);
 
     }
 }

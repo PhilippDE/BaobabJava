@@ -19,6 +19,7 @@ public class Mainframe extends JFrame{
     private JButton analyzeButton;
     private JLabel currentPathLabel;
     private JLabel progressLabel;
+    private JLabel pathLabelStatic;
 
     private static Node supernode;
 
@@ -38,15 +39,16 @@ public class Mainframe extends JFrame{
 
     @Override
     public void paint(Graphics g){
+        super.paint(g);
         this.progressLabel.setMinimumSize(new Dimension(this.rootPanel.getWidth()-20,15));
         this.progressLabel.setPreferredSize(new Dimension(this.rootPanel.getWidth()-20,15));
         this.progressLabel.setMaximumSize(new Dimension(this.rootPanel.getWidth()-20,15));
-        super.paint(g);
     }
 
     private void createUIComponents() {
         rootPanel=new JPanel();
         chooseDirectoy=new JButton();
+        chooseDirectoy.setFont(GraphicsConstants.standardFont);
         chooseDirectoy.addActionListener(e -> {
             JFileChooser fs = new JFileChooser(new File("c:"));
             fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -83,6 +85,7 @@ public class Mainframe extends JFrame{
         });
 
         analyzeButton=new JButton();
+        analyzeButton.setFont(GraphicsConstants.standardFont);
         analyzeButton.addActionListener(e -> {
             if(supernode==null) {
                 JFileChooser fs = new JFileChooser(new File("c:\\documents"));
@@ -138,11 +141,17 @@ public class Mainframe extends JFrame{
         sunview=new SunviewPanel(treeview);
 
         currentPathLabel=new JLabel();
+        currentPathLabel.setFont(GraphicsConstants.standardFont);
 
         progressLabel=new JLabel();
         this.progressLabel.setMinimumSize(new Dimension(this.rootPanel.getWidth()-20,15));
         this.progressLabel.setPreferredSize(new Dimension(this.rootPanel.getWidth()-20,15));
         this.progressLabel.setMaximumSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        progressLabel.setFont(GraphicsConstants.standardFont);
+        progressLabel.setText("Ready");
+
+        pathLabelStatic=new JLabel();
+        pathLabelStatic.setFont(GraphicsConstants.standardFont);
     }
 
     public static Node getSupernode(){

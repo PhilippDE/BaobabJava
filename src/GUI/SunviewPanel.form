@@ -74,7 +74,7 @@
               <text value="7"/>
             </properties>
           </component>
-          <component id="ab2e6" class="javax.swing.JLabel">
+          <component id="ab2e6" class="javax.swing.JLabel" binding="layersLabelStatic" custom-create="true">
             <constraints>
               <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
             </constraints>
@@ -82,7 +82,7 @@
               <text value="Layers: "/>
             </properties>
           </component>
-          <component id="924ff" class="javax.swing.JLabel">
+          <component id="924ff" class="javax.swing.JLabel" binding="folderPathStatic" custom-create="true">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
             </constraints>
@@ -90,7 +90,7 @@
               <text value="Folder: "/>
             </properties>
           </component>
-          <component id="17d66" class="javax.swing.JLabel">
+          <component id="17d66" class="javax.swing.JLabel" binding="sizeLabelStatic" custom-create="true">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
             </constraints>
@@ -98,7 +98,7 @@
               <text value="Size: "/>
             </properties>
           </component>
-          <component id="4b145" class="javax.swing.JLabel">
+          <component id="4b145" class="javax.swing.JLabel" binding="fullPathLabelStatic" custom-create="true">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
             </constraints>

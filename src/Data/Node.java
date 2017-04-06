@@ -64,9 +64,6 @@ public class Node{
         this.angleEnd=angleStart+angleLength;
     }
 
-
-
-
     /**
      * Calculates the subnodes of this node
      */

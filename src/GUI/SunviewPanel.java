@@ -26,6 +26,10 @@ public class SunviewPanel implements DataVisualizer{
     private JLabel sizeLabel;
     private JFormattedTextField layerCountField;
     private JTextArea fullPathArea;
+    private JLabel folderPathStatic;
+    private JLabel sizeLabelStatic;
+    private JLabel fullPathLabelStatic;
+    private JLabel layersLabelStatic;
 
     private final static double degreeOffset=3.0;
     private final static double degreeSpacer=1.5;
@@ -33,12 +37,12 @@ public class SunviewPanel implements DataVisualizer{
     private static double ringFactor=1.35;
     private static int layerCount=7;
     private boolean startedRendering=false;
+    private boolean startedCalculating=false;
     private final static double layerBuffer=2;
 
     private static double layerThickness=50*ringFactor*(5.0/(double)layerCount);
     private static double layerOffset=30*ringFactor*(5.0/(double)layerCount);
     BufferedImage buffer=new BufferedImage(400,400,BufferedImage.TYPE_INT_ARGB);
-    private static final Font labelFont=new Font("",Font.PLAIN,16);
 
     private Node superNode;
 
@@ -66,12 +70,15 @@ public class SunviewPanel implements DataVisualizer{
     private void createUIComponents() {
 
         popupMenu=new Sunpopup();
+        popupMenu.setFont(GraphicsConstants.standardFont);
 
         JMenuItem m=new JMenuItem("Open in "+ OSDependingData.getFileViewer());
+        m.setFont(GraphicsConstants.standardFont);
         m.setHorizontalAlignment(JMenuItem.LEFT);
         m.addActionListener(e -> clickedNode.openInOSFileviewer());
         popupMenu.add(m);
         m=new JMenuItem("Detailed View ");
+        m.setFont(GraphicsConstants.standardFont);
         m.setHorizontalAlignment(JMenuItem.LEFT);
         m.addActionListener(e -> clickedNode.createDetailedViewWindow());
         popupMenu.add(m);
@@ -131,6 +138,7 @@ public class SunviewPanel implements DataVisualizer{
 
         infoPanel=new JPanel();
         update=new JButton();
+        update.setFont(GraphicsConstants.standardFont);
         update.addActionListener(e->{
             layerCount=(Integer)layerCountField.getValue();
             updateLayers();
@@ -142,28 +150,41 @@ public class SunviewPanel implements DataVisualizer{
 
         //Preventing labels from growing when text's to large
         nameLabel=new JLabel();
-        nameLabel.setFont(labelFont);
-        nameLabel.setMinimumSize(new Dimension(180,35));
-        nameLabel.setPreferredSize(new Dimension(180,35));
-        nameLabel.setMaximumSize(new Dimension(180,35));
+        nameLabel.setFont(GraphicsConstants.labelFont);
+        nameLabel.setMinimumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        nameLabel.setPreferredSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        nameLabel.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
 
         sizeLabel=new JLabel();
-        sizeLabel.setFont(labelFont);
-        sizeLabel.setMinimumSize(new Dimension(180,35));
-        sizeLabel.setPreferredSize(new Dimension(180,35));
-        sizeLabel.setMaximumSize(new Dimension(180,35));
+        sizeLabel.setFont(GraphicsConstants.labelFont);
+        sizeLabel.setMinimumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        sizeLabel.setPreferredSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
+        sizeLabel.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX,GraphicsConstants.nameLabelY));
 
 
         layerCountField=new JFormattedTextField();
+        layerCountField.setFont(GraphicsConstants.standardFont);
         layerCountField.setValue(7);
         layerCountField.setText("Layers: ");
 
         fullPathArea=new JTextArea();
+        fullPathArea.setFont(GraphicsConstants.standardFont);
         fullPathArea.setEditable(false);
         fullPathArea.setLineWrap(true);
         fullPathArea.setRows(1);
         fullPathArea.setBackground(infoPanel.getBackground());
 
+        folderPathStatic=new JLabel();
+        folderPathStatic.setFont(GraphicsConstants.standardFont);
+
+        sizeLabelStatic=new JLabel();
+        sizeLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        fullPathLabelStatic=new JLabel();
+        fullPathLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        layersLabelStatic=new JLabel();
+        layersLabelStatic.setFont(GraphicsConstants.standardFont);
 
     }
 
@@ -449,6 +470,7 @@ public class SunviewPanel implements DataVisualizer{
         g.setFont(new Font("Arial",Font.BOLD,35));
         g.drawString("Calculating Node",drawPanel.getWidth()/2-100,drawPanel.getHeight()/2-70);
         rootPanel.repaint();
+        this.superNode=null;
     }
 
     /**
