@@ -238,7 +238,6 @@ public class Node{
      * Opens this nodes file in the OS's default file viewer (e.g. Explorer in Windows)
      */
     public void openInOSFileviewer(){
-        System.out.println("Called method!");
         try {
             if(Desktop.isDesktopSupported())
             Desktop.getDesktop().open(this.ownPath);

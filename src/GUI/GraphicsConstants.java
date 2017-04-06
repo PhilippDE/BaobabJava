@@ -28,7 +28,7 @@ public class GraphicsConstants {
     public static final int WidthFULLHD=1920;
     public static final int HeightFULLHD=1080;
 
-    private static final int nLabelXFHD=200;
+    private static final int nLabelXFHD=150;
     private static final int nLabelYFHD=40;
 
     private static final int fontSizeFULLHD=11;

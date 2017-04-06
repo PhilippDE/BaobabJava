@@ -12,12 +12,16 @@ import java.util.ArrayList;
 /**
  * Created by Marcel on 06.03.2017.
  */
-public class TreeviewPanel implements DataVisualizer{
+public class TreeviewPanel implements DataVisualizer {
     private JPanel rootPanel;
     private Tree tree;
 
+    public JPanel getRootPanel() {
+        return rootPanel;
+    }
+
     private void createUIComponents() {
-        rootPanel=new JPanel(new GridLayout(1, 1));
+        rootPanel = new JPanel(new GridLayout(1, 1));
         // rootPanel.setPreferredSize(new Dimension(GraphicsConstants.treeviewPrefferedFULLHDX,
         //         GraphicsConstants.treeviewPrefferedFULLHDY));
     }
@@ -27,9 +31,8 @@ public class TreeviewPanel implements DataVisualizer{
      * @param node Node that should be shown.
      */
     public void showNode(Node node) {
-        new Thread(()->{
+        new Thread(() -> {
             // clear rootPanel because there might be another JTree from an analysis before
-            System.out.println("Started thread TREE");
             rootPanel.removeAll();
             rootPanel.revalidate();
             rootPanel.repaint();
@@ -61,14 +64,14 @@ public class TreeviewPanel implements DataVisualizer{
      */
     private void addSubnodesToTree(Node node, DefaultMutableTreeNode treeNode) {
         // iterate through every subnode of the given node
-        for(Node n : node.getSubNodes()) {
+        for (Node n : node.getSubNodes()) {
             // create a DefaultMutableTreeNode object for the subnode
             DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
             // add the DefaultMutableTreeNode to the upper tree node
             treeNode.add(newTreeNode);
             n.setTreePath(getPath(newTreeNode));
             // if the subnode contains subnodes add them too
-            if(n.getSubNodes().length > 0) {
+            if (n.getSubNodes().length > 0) {
                 addSubnodesToTree(n, newTreeNode);
             }
             // add the information about the files in the subnode
@@ -94,10 +97,10 @@ public class TreeviewPanel implements DataVisualizer{
         rootPanel.removeAll();
         rootPanel.revalidate();
         rootPanel.repaint();
-        Graphics2D g=(Graphics2D)rootPanel.getGraphics();
+        Graphics2D g = (Graphics2D) rootPanel.getGraphics();
         g.setColor(Color.darkGray);
-        g.setFont(new Font("Arial",Font.BOLD,35));
-        g.drawString("Calculating Node",rootPanel.getWidth()/2-100,rootPanel.getHeight()/2-70);
+        g.setFont(new Font("Arial", Font.BOLD, 35));
+        g.drawString("Calculating Node", rootPanel.getWidth() / 2 - 100, rootPanel.getHeight() / 2 - 70);
         rootPanel.repaint();
     }
 
@@ -120,4 +123,5 @@ public class TreeviewPanel implements DataVisualizer{
 
         return nodes.isEmpty() ? null : new TreePath(nodes.toArray());
     }
+
 }
