@@ -81,6 +81,7 @@ public class SunviewPanel implements DataVisualizer{
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                updateLayers();
                 if (!startedRendering) {
                     int size;
                     if (drawPanel.getWidth() == drawPanel.getHeight()) {
@@ -94,7 +95,7 @@ public class SunviewPanel implements DataVisualizer{
                 }
             }
         };
-       // drawPanel.setComponentPopupMenu(popupMenu);
+        drawPanel.setComponentPopupMenu(popupMenu);
         drawPanel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -110,7 +111,6 @@ public class SunviewPanel implements DataVisualizer{
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(!e.isPopupTrigger()&&e.getButton()==MouseEvent.BUTTON1) {
-                    System.out.println("Updated");
                     clickedNode = extractNode(extractArcLevel(e.getX(), e.getY()));
                     treeviewPanel.expandPath(clickedNode);
                 }
@@ -459,8 +459,16 @@ public class SunviewPanel implements DataVisualizer{
      */
     private double[] extractArcLevel(int x,int y){
         double[] returnA=new double[2];
-        int xCenter=buffer.getHeight()/2;
-        int yCenter=buffer.getHeight()/2;
+        int size;
+        if (drawPanel.getWidth() == drawPanel.getHeight()) {
+            size = drawPanel.getWidth();
+        } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
+            size = drawPanel.getHeight();
+        } else {
+            size = drawPanel.getWidth();
+        }
+        int xCenter=size/2;
+        int yCenter=size/2;
         double distance=Math.sqrt(Math.pow(x-xCenter,2)+Math.pow(y-yCenter,2));
         double angle=Math.asin(Math.abs((double)y-yCenter)/distance);
         //1 & 2 quadrant

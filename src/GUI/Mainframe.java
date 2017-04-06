@@ -36,6 +36,13 @@ public class Mainframe extends JFrame{
         this.setVisible(true);
     }
 
+    @Override
+    public void paint(Graphics g){
+        this.progressLabel.setMinimumSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        this.progressLabel.setPreferredSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        this.progressLabel.setMaximumSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        super.paint(g);
+    }
 
     private void createUIComponents() {
         rootPanel=new JPanel();
@@ -131,6 +138,11 @@ public class Mainframe extends JFrame{
         sunview=new SunviewPanel(treeview);
 
         currentPathLabel=new JLabel();
+
+        progressLabel=new JLabel();
+        this.progressLabel.setMinimumSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        this.progressLabel.setPreferredSize(new Dimension(this.rootPanel.getWidth()-20,15));
+        this.progressLabel.setMaximumSize(new Dimension(this.rootPanel.getWidth()-20,15));
     }
 
     public static Node getSupernode(){
