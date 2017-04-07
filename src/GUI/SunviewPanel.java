@@ -48,6 +48,66 @@ public class SunviewPanel implements DataVisualizer {
 
     private TreeviewPanel treeviewPanel;
 
+    private boolean run=true;
+    private AnimationThread currentAnimation;
+
+    private class AnimationThread extends Thread{
+        private int count=0;
+
+        @Override
+        public void run(){
+            run=true;
+            while(run) {
+                if(Thread.interrupted()){
+                    return;
+                }
+                if(!startedRendering){
+                    buffer = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = (Graphics2D) buffer.getGraphics();
+                    g.setColor(Color.darkGray);
+                    g.setFont(new Font("Arial", Font.BOLD, 35));
+                    String draw="Calculating";
+                    switch (count) {
+                        case 0:
+                            count++;
+                            break;
+                        case 1:
+                            draw+=" . ";
+                            count++;
+                            break;
+                        case 2:
+                            draw+=" . . ";
+                            count++;
+                            break;
+
+                        case 3:
+                            draw+=" . . .";
+                            count = 0;
+                            break;
+                    }
+                    if(Thread.interrupted()){
+                        return;
+                    }
+                    g.drawString(draw, drawPanel.getWidth() / 2 - 100, drawPanel.getHeight() / 2 - 70);
+                    g.dispose();
+                    if(Thread.interrupted()){
+                        return;
+                    }
+                    rootPanel.repaint();
+                    if(Thread.interrupted()){
+                        return;
+                    }
+                }
+                try {
+                    Thread.sleep(700);
+                } catch (InterruptedException exit) {
+                    return;
+                }
+            }
+        }
+    }
+
+
     public JPanel getRootPanel(){
         return rootPanel;
     }
@@ -437,6 +497,18 @@ public class SunviewPanel implements DataVisualizer {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                startedRendering=true;
+                try {
+                    while (currentAnimation.isAlive()) {
+                        run = false;
+                        currentAnimation.interrupt();
+                        if (!currentAnimation.isAlive()) {
+                            currentAnimation = null;
+                        }
+                    }
+                }catch (NullPointerException ignored){
+                    System.out.println("Thread is null");
+                }
                 startedRendering = true;
                 SunviewPanel.this.superNode = node;
                 SunviewPanel.this.updateLayers();
@@ -497,33 +569,36 @@ public class SunviewPanel implements DataVisualizer {
 
     @Override
     public void displayClaculatingMesssage() {
-        buffer = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D) buffer.getGraphics();
-        g.setColor(Color.darkGray);
-        g.setFont(new Font("Arial", Font.BOLD, 35));
-        g.drawString("Calculating Node", drawPanel.getWidth() / 2 - 100, drawPanel.getHeight() / 2 - 70);
         rootPanel.repaint();
         this.superNode = null;
+        currentAnimation =new AnimationThread();
+        currentAnimation.start();
     }
 
     @Override
     public void disable() {
+        run=false;
         for(Component j:infoPanel.getComponents()){
             j.setEnabled(false);
         }
         for(Component j:drawPanel.getComponents()){
             j.setEnabled(false);
         }
+        buffer = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        rootPanel.repaint();
     }
 
     @Override
     public void enable() {
+        run=false;
         for(Component j:infoPanel.getComponents()){
             j.setEnabled(true);
         }
         for(Component j:drawPanel.getComponents()){
             j.setEnabled(true);
         }
+        buffer = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        rootPanel.repaint();
     }
 
     /**

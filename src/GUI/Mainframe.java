@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -104,31 +105,47 @@ public class Mainframe extends JFrame {
         analyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (supernode == null) {
-                    JFileChooser fs = new JFileChooser(new File("c:"));
-                    fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    fs.setDialogTitle("save");
-                    //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
-                    int returnVal = fs.showSaveDialog(null);
-                    switch (returnVal) {
-                        case JFileChooser.APPROVE_OPTION:
-                            File input = fs.getSelectedFile();
-                            if (input.exists()) {
-                                supernode = new Node(input);
-                                pathChangedSinceLastAnalysis = true;
-                            } else {
-                            }
-                            fs.setVisible(false);
-                            break;
-                        case JFileChooser.CANCEL_OPTION:
-                            fs.setVisible(false);
-                            break;
+                if(analyzeButton.getText().equals("Analyze")) {
+                    if (supernode == null) {
+                        JFileChooser fs = new JFileChooser(new File("c:"));
+                        fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        fs.setDialogTitle("save");
+                        //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
+                        int returnVal = fs.showSaveDialog(null);
+                        switch (returnVal) {
+                            case JFileChooser.APPROVE_OPTION:
+                                File input = fs.getSelectedFile();
+                                if (input.exists()) {
+                                    supernode = new Node(input);
+                                    pathChangedSinceLastAnalysis = true;
+                                } else {
+                                }
+                                fs.setVisible(false);
+                                break;
+                            case JFileChooser.CANCEL_OPTION:
+                                fs.setVisible(false);
+                                break;
+                        }
                     }
+                    if (!pathChangedSinceLastAnalysis) return;
+                    pathChangedSinceLastAnalysis = false;
+                    currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
+                    processNode(supernode);
+                }else if(analyzeButton.getText().equals("Cancel")){
+
+                    //Code for restoring the default state after user chose to cancel calculating
+
+                    while(background.isAlive()){
+                        background.interrupt();
+                    }
+
+                    Threadmanager.stopThreads();
+                    sunview.enable();
+                    treeview.enable();
+                    enableComponents();
+                    threadStarted=false;
+                    progressLabel.setText("Ready");
                 }
-                if (!pathChangedSinceLastAnalysis) return;
-                pathChangedSinceLastAnalysis = false;
-                currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
-                processNode(supernode);
             }
         });
 
@@ -183,9 +200,10 @@ public class Mainframe extends JFrame {
 
     public static void processNode(final Node node){
         instance.currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
-            background = new Thread(new Runnable() {
+        background = new Thread(){
             @Override
             public void run() {
+                System.out.println("Started");
                 long start = System.currentTimeMillis();
                 supernode = node;
 
@@ -199,6 +217,12 @@ public class Mainframe extends JFrame {
                 instance.treeview.displayClaculatingMesssage();
                 long millis = System.currentTimeMillis() - start;
                 if (supernode != null) {
+                    System.out.println("Started caclulating");
+
+                    //Checking if interrupted so thread stops
+                    if(Thread.interrupted()) {
+                        return;
+                    }
                     supernode.calculateSubnodes(instance.progressLabel);
                     instance.progressLabel.setText("Calculating sizes");
                     System.out.println(String.format("%d min, %d sec",
@@ -206,6 +230,11 @@ public class Mainframe extends JFrame {
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+
+                    //Checking if interrupted so thread stops
+                    if(Thread.interrupted()) {
+                        return;
+                    }
                     supernode.calculateSize();
                     instance.progressLabel.setText("Sorting nodes");
                     millis = System.currentTimeMillis() - start;
@@ -214,6 +243,11 @@ public class Mainframe extends JFrame {
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+
+                    //Checking if interrupted so thread stops
+                    if(Thread.interrupted()) {
+                        return;
+                    }
                     supernode.sortNodesSizeReversed();
                     instance.progressLabel.setText("Preparing visualization");
                     millis = System.currentTimeMillis() - start;
@@ -222,6 +256,11 @@ public class Mainframe extends JFrame {
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+
+                    //Checking if interrupted so thread stops
+                    if(Thread.interrupted()) {
+                        return;
+                    }
                     SunviewPanel.setColorsBasedOnAngle(supernode);
                     millis = System.currentTimeMillis() - start;
                     System.out.println(String.format("%d min, %d sec",
@@ -230,14 +269,26 @@ public class Mainframe extends JFrame {
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
                 }
-                instance.treeview.showNode(supernode);
-                instance.sunview.drawNode(supernode);
-                instance.sunview.setNodeInformation(supernode.getName(), supernode.sizeFormated(), supernode.getOwnPath().getAbsolutePath());
+                //Checking if interrupted so thread stops
+                if(Thread.interrupted()) {
+                    return;
+                }
 
-                instance.threadStarted = false;
                 instance.sunview.enable();
                 instance.treeview.enable();
                 instance.enableComponents();
+
+
+                instance.treeview.showNode(supernode);
+                instance.sunview.drawNode(supernode);
+
+                //Checking if interrupted so thread stops
+                if(Thread.interrupted()) {
+                    return;
+                }
+                instance.sunview.setNodeInformation(supernode.getName(), supernode.sizeFormated(), supernode.getOwnPath().getAbsolutePath());
+
+                instance.threadStarted = false;
 
                 instance.progressLabel.setText("Finished calculating in " + String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes(millis),
@@ -245,7 +296,7 @@ public class Mainframe extends JFrame {
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))));
 
             }
-        });
+        };
         if (!instance.threadStarted) {
             instance.threadStarted = true;
             background.start();
@@ -256,53 +307,12 @@ public class Mainframe extends JFrame {
         chooseDirectoy.setEnabled(false);
         settingsButton.setEnabled(false);
         analyzeButton.setText("Cancel");
-        analyzeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Stopping??");
-                background.stop();
-                Threadmanager.stopThreads();
-                sunview.enable();
-                treeview.enable();
-                enableComponents();
-            }
-        });
     }
-    public void enableComponents(){
+    public void enableComponents() {
         chooseDirectoy.setEnabled(true);
         settingsButton.setEnabled(true);
         analyzeButton.setText("Analyze");
-        analyzeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (supernode == null) {
-                    JFileChooser fs = new JFileChooser(new File("c:"));
-                    fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    fs.setDialogTitle("save");
-                    //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
-                    int returnVal = fs.showSaveDialog(null);
-                    switch (returnVal) {
-                        case JFileChooser.APPROVE_OPTION:
-                            File input = fs.getSelectedFile();
-                            if (input.exists()) {
-                                supernode = new Node(input);
-                                pathChangedSinceLastAnalysis = true;
-                            } else {
-                            }
-                            fs.setVisible(false);
-                            break;
-                        case JFileChooser.CANCEL_OPTION:
-                            fs.setVisible(false);
-                            break;
-                    }
-                }
-                if (!pathChangedSinceLastAnalysis) return;
-                pathChangedSinceLastAnalysis = false;
-                currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
-                processNode(supernode);
-            }
-        });    }
-
+    }
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

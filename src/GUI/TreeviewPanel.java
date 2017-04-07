@@ -100,11 +100,6 @@ public class TreeviewPanel implements DataVisualizer {
         rootPanel.removeAll();
         rootPanel.revalidate();
         rootPanel.repaint();
-        Graphics2D g = (Graphics2D) rootPanel.getGraphics();
-        g.setColor(Color.darkGray);
-        g.setFont(new Font("Arial", Font.BOLD, 35));
-        g.drawString("Calculating Node", rootPanel.getWidth() / 2 - 100, rootPanel.getHeight() / 2 - 70);
-        rootPanel.repaint();
     }
 
     @Override

@@ -20,9 +20,19 @@ public final class Threadmanager implements ThreadFinishedListener{
         if(!end) {
             threads.add(thread);
             int count = 0;
-            for (NotifyingThread t : threads) {
-                if (t.isAlive()) {
-                    count++;
+            boolean flag=true;
+            while(flag) {
+                try{
+                    flag=false;
+                    for (NotifyingThread t : threads) {
+                        if (t.isAlive()) {
+                            count++;
+                        }
+                    }
+                }
+                catch (ConcurrentModificationException ignored) {
+                    System.out.println("CCM in Threadmanager adding");
+                    flag=true;
                 }
             }
             if (count < threadCountLimit)
@@ -38,44 +48,57 @@ public final class Threadmanager implements ThreadFinishedListener{
     public void notifyThreadFinished(NotifyingThread thread) {
         threads.remove(thread);
         int count=0;
-        try {
-            for (NotifyingThread t : threads) {
-                if (t.isAlive()) {
-                    count++;
-                } else {
-                    if (count < threadCountLimit) {
-                        try {
-                            t.start();
-                        }catch(IllegalThreadStateException ignored){
-
-                        }
+        if(!end) {
+            boolean flag=true;
+            while(flag) {
+                try{
+                    flag=false;
+                for (NotifyingThread t : threads) {
+                    if (t.isAlive()) {
                         count++;
+                    } else {
+                        if (count < threadCountLimit) {
+                            try {
+                                t.start();
+                            } catch (IllegalThreadStateException ignored) {
+
+                            }
+                               count++;
+                            }
+                        }
                     }
+                } catch (ConcurrentModificationException ignored) {
+                    System.out.println("CCM in Threadmanager notification");
+                    flag=true;
                 }
             }
-        }catch(ConcurrentModificationException ignored){
-
         }
     }
 
     public static void stopThreads(){
         end=true;
-        new Thread(){
-            @Override
-            public void run(){
                 boolean flag=true;
-                while(flag) {
+                while(flag&& threads.size()!=0) {
                     try {
                         flag=false;
                         for (NotifyingThread t : threads) {
-                            t.stop();
-                        }}
-                        catch (ConcurrentModificationException ignored) {
-                            flag=true;
+                            while(t.isAlive()) {
+                                t.interrupt();
+
+                                if (t.isInterrupted() && !t.isAlive()) {
+                                    threads.remove(t);
+                                }
+                            }
+                            if(!t.isAlive()){
+                                threads.remove(t);
+                            }
                         }
                     }
+                    catch (ConcurrentModificationException ignored) {
+                        flag=true;
+                    }
                 }
-        }.start();
+                end=false;
     }
 
     private Threadmanager(){}

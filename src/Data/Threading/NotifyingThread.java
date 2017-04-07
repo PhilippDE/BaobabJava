@@ -13,6 +13,9 @@ public class NotifyingThread extends Thread {
 
 
     private final void notifyListener(){
+        if(isInterrupted()){
+            return;
+        }
         tfl.notifyThreadFinished(this);
     }
 
@@ -22,11 +25,14 @@ public class NotifyingThread extends Thread {
 
     @Override
     public final void run(){
-        try{
-            task();
-        }finally{
-            notifyListener();
-        }
+            try {
+                task();
+                if(Thread.interrupted()) {
+                    return;
+                }
+            } finally {
+                notifyListener();
+            }
     }
 
 }

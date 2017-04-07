@@ -90,7 +90,10 @@ public class Node{
      * Calculates the subnodes of this node
      */
     public void calculateSubnodes(JLabel progress){
-        File[] subDirectories=getSubdirectories(this.ownPath);
+        //Checking if interrupted so thread stops
+        if(Thread.interrupted()) {
+            return;
+        }        File[] subDirectories=getSubdirectories(this.ownPath);
         progress.setText("Mapping path: "+this.ownPath.getAbsolutePath());
         for(int i=0;i<subNodes.length;i++){
             subNodes[i]=new Node(subDirectories[i], this);
@@ -99,6 +102,10 @@ public class Node{
             this.size=getSizeofFiles(this.ownPath);
         }else{
             for (Node subNode : subNodes) {
+                //Checking if interrupted so thread stops
+                if(Thread.interrupted()) {
+                    return;
+                }
                 if(Settings.multiThreading) {
                     Threadmanager.addThread(new CalculateThread(subNode,progress));
                 }else{
@@ -108,6 +115,10 @@ public class Node{
         }
         boolean flag=true;
         while(flag) {
+            //Checking if interrupted so thread stops
+            if(Thread.interrupted()) {
+                return;
+            }
             flag=false;
             for (Node n : subNodes) {
                 if (!n.finishedCalculating) {
@@ -117,7 +128,7 @@ public class Node{
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return;
             }
         }
         finishedCalculating=true;
@@ -125,15 +136,26 @@ public class Node{
     }
 
     private void calculateSubnodesInner(JLabel progress){
+        //Checking if interrupted so thread stops
+        if(Thread.interrupted()) {
+           return;
+        }
         File[] subDirectories=getSubdirectories(this.ownPath);
         progress.setText("Mapping path: "+this.ownPath.getAbsolutePath());
         for(int i=0;i<subNodes.length;i++){
+            if(Thread.interrupted()) {
+                return;
+            }
             subNodes[i]=new Node(subDirectories[i], this);
         }
         if(this.subNodes.length<1){
             this.size=getSizeofFiles(this.ownPath);
         }else{
             for (Node subNode : subNodes) {
+                //Checking if interrupted so thread stops
+                if(Thread.interrupted()) {
+                    return;
+                }
                 subNode.calculateSubnodesInner(progress);
             }
         }
@@ -144,6 +166,10 @@ public class Node{
      * Calculates the size of this node
      */
     public void calculateSize() {
+        //Checking if interrupted so thread stops
+        if(Thread.interrupted()) {
+            return;
+        }
         if (this.size == -1){
             this.size = 0;
             for (Node n : subNodes) {
