@@ -21,20 +21,23 @@ public class NodeView extends JFrame {
     private JLabel filesPathStatic;
 
 
-    public NodeView(Node node) {
-        EventQueue.invokeLater(() -> {
-            NodeView.this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            NodeView.this.setContentPane(NodeView.this.rootPanel);
-            NodeView.this.setMinimumSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
-            NodeView.this.setPreferredSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
-            NodeView.this.setSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
-            NodeView.this.setTitle("Folder details: " + node.getName());
-            nameLabel.setText(node.getName());
-            sizeLabel.setText(Node.sizeFormated(node.getSize()));
-            fullPathArea.setText(node.getOwnPath().getAbsolutePath());
-            amountOfFiles.setText(node.getFilesCountRecursively() + " Files");
-            NodeView.this.pack();
-            NodeView.this.setVisible(true);
+    public NodeView(final Node node) {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                NodeView.this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                NodeView.this.setContentPane(NodeView.this.rootPanel);
+                NodeView.this.setMinimumSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
+                NodeView.this.setPreferredSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
+                NodeView.this.setSize(new Dimension(GraphicsConstants.nodeViewerFULLHDX, GraphicsConstants.nodeViewerFULLHDY / 2));
+                NodeView.this.setTitle("Folder details: " + node.getName());
+                nameLabel.setText(node.getName());
+                sizeLabel.setText(Node.sizeFormated(node.getSize()));
+                fullPathArea.setText(node.getOwnPath().getAbsolutePath());
+                amountOfFiles.setText(node.getFilesCountRecursively() + " Files");
+                NodeView.this.pack();
+                NodeView.this.setVisible(true);
+            }
         });
 
     }

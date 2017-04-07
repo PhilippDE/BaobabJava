@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -259,7 +260,13 @@ public class Node{
      * @return the array of files that are subdirectories
      */
     public static File[] getSubdirectories(File f){
-        return f.listFiles(File::isDirectory);
+
+        return f.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        });
     }
 
     /**
@@ -270,7 +277,12 @@ public class Node{
      */
     public static int getSubdirectoryCount(File f){
         try {
-            return f.listFiles(File::isDirectory).length;
+            return f.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return file.isDirectory();
+                }
+            }).length;
         }catch(NullPointerException ignored){
             return 0;
         }

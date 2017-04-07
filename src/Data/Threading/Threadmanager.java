@@ -12,31 +12,31 @@ public final class Threadmanager implements ThreadFinishedListener{
 
     private static ArrayList<NotifyingThread> threads=new ArrayList<>();
 
+    private static boolean end=false;
+
     private static Threadmanager listener=new Threadmanager();
 
     public static void addThread(NotifyingThread thread){
-        threads.add(thread);
-        int count=0;
-        for(NotifyingThread t:threads ){
-            if(t.isAlive()){
-                count++;
+        if(!end) {
+            threads.add(thread);
+            int count = 0;
+            for (NotifyingThread t : threads) {
+                if (t.isAlive()) {
+                    count++;
+                }
             }
+            if (count < threadCountLimit)
+                thread.start();
         }
-        if(count<threadCountLimit)
-            thread.start();
     }
 
     public static Threadmanager getListener(){
         return listener;
     }
 
-
-    private Threadmanager(){}
-
     @Override
     public void notifyThreadFinished(NotifyingThread thread) {
         threads.remove(thread);
-        System.out.println(threads.size());
         int count=0;
         try {
             for (NotifyingThread t : threads) {
@@ -44,7 +44,11 @@ public final class Threadmanager implements ThreadFinishedListener{
                     count++;
                 } else {
                     if (count < threadCountLimit) {
-                        t.start();
+                        try {
+                            t.start();
+                        }catch(IllegalThreadStateException ignored){
+
+                        }
                         count++;
                     }
                 }
@@ -53,4 +57,28 @@ public final class Threadmanager implements ThreadFinishedListener{
 
         }
     }
+
+    public static void stopThreads(){
+        end=true;
+        new Thread(){
+            @Override
+            public void run(){
+                boolean flag=true;
+                while(flag) {
+                    try {
+                        flag=false;
+                        for (NotifyingThread t : threads) {
+                            t.stop();
+                        }}
+                        catch (ConcurrentModificationException ignored) {
+                            flag=true;
+                        }
+                    }
+                }
+        }.start();
+    }
+
+    private Threadmanager(){}
+
+
 }

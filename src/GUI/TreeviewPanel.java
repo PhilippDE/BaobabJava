@@ -30,29 +30,32 @@ public class TreeviewPanel implements DataVisualizer {
      * This method shows a JTree with the information from the given node.
      * @param node Node that should be shown.
      */
-    public void showNode(Node node) {
-        new Thread(() -> {
-            // clear rootPanel because there might be another JTree from an analysis before
-            rootPanel.removeAll();
-            rootPanel.revalidate();
-            rootPanel.repaint();
-            // create the first DefaultMutableTreeNode for the given supernode
-            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
-            // add the subnodes, their subnodes etc. and their files
-            addSubnodesToTree(node, treeNode);
-            // add the files of the supernode
-            addFilesToTree(node, treeNode);
-            // create the JTree with the DefaultMutableTreeNode of the supernode
-            tree = new Tree(treeNode);
-            tree.setFont(GraphicsConstants.standardFont);
-            tree.setRowHeight(GraphicsConstants.treeRowHeight);
-            // it should be possible to scroll when the tree is too long
-            JScrollPane scrollTree = new JScrollPane(tree);
-            scrollTree.setViewportView(tree);
+    public void showNode(final Node node) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // clear rootPanel because there might be another JTree from an analysis before
+                rootPanel.removeAll();
+                rootPanel.revalidate();
+                rootPanel.repaint();
+                // create the first DefaultMutableTreeNode for the given supernode
+                DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
+                // add the subnodes, their subnodes etc. and their files
+                TreeviewPanel.this.addSubnodesToTree(node, treeNode);
+                // add the files of the supernode
+                TreeviewPanel.this.addFilesToTree(node, treeNode);
+                // create the JTree with the DefaultMutableTreeNode of the supernode
+                tree = new Tree(treeNode);
+                tree.setFont(GraphicsConstants.standardFont);
+                tree.setRowHeight(GraphicsConstants.treeRowHeight);
+                // it should be possible to scroll when the tree is too long
+                JScrollPane scrollTree = new JScrollPane(tree);
+                scrollTree.setViewportView(tree);
 
-            // add the scrollable tree to the rootPanel
-            rootPanel.add(scrollTree);
-            rootPanel.validate();
+                // add the scrollable tree to the rootPanel
+                rootPanel.add(scrollTree);
+                rootPanel.validate();
+            }
         }).start();
     }
 
@@ -104,10 +107,26 @@ public class TreeviewPanel implements DataVisualizer {
         rootPanel.repaint();
     }
 
+    @Override
+    public void disable() {
+        for(Component j:rootPanel.getComponents()){
+            j.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void enable() {
+        for(Component j:rootPanel.getComponents()){
+            j.setEnabled(true);
+        }
+    }
+
     public void expandPath(Node node) {
+        if(node!=null){
         TreePath path = node.getTreePath();
         tree.expandPath(path);
         tree.scrollPathToVisible(path);
+        }
     }
 
     public static TreePath getPath(TreeNode treeNode) {

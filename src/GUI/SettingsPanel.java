@@ -5,6 +5,8 @@ import Data.Settings;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 
 /**
@@ -23,16 +25,19 @@ public class SettingsPanel extends JFrame{
     private JButton cancelButton;
 
     public SettingsPanel(){
-        EventQueue.invokeLater(() -> {
-            SettingsPanel.this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            SettingsPanel.this.setContentPane(SettingsPanel.this.rootPanel);
-            SettingsPanel.this.setMinimumSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
-            SettingsPanel.this.setPreferredSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
-            SettingsPanel.this.setSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
-            SettingsPanel.this.setMaximumSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
-            SettingsPanel.this.setTitle("Settings");
-            SettingsPanel.this.pack();
-            SettingsPanel.this.setVisible(true);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                SettingsPanel.this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                SettingsPanel.this.setContentPane(SettingsPanel.this.rootPanel);
+                SettingsPanel.this.setMinimumSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
+                SettingsPanel.this.setPreferredSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
+                SettingsPanel.this.setSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
+                SettingsPanel.this.setMaximumSize(new Dimension(GraphicsConstants.settingsPanelFULLHDX, GraphicsConstants.settingsPanelFULLHDY));
+                SettingsPanel.this.setTitle("Settings");
+                SettingsPanel.this.pack();
+                SettingsPanel.this.setVisible(true);
+            }
         });
     }
 
@@ -62,16 +67,22 @@ public class SettingsPanel extends JFrame{
 
         applyButton=new JButton();
         applyButton.setFont(GraphicsConstants.standardFont);
-        applyButton.addActionListener(e->{
-            Settings.multiThreading=multithreadingCheck.isSelected();
-            Settings.threadCountLimit=(Integer)threadCountLimit.getValue();
-            this.dispose();
+        applyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Settings.multiThreading = multithreadingCheck.isSelected();
+                Settings.threadCountLimit = (Integer) threadCountLimit.getValue();
+                SettingsPanel.this.dispose();
+            }
         });
 
         cancelButton=new JButton();
         cancelButton.setFont(GraphicsConstants.standardFont);
-        cancelButton.addActionListener(e->{
-            this.dispose();
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SettingsPanel.this.dispose();
+            }
         });
     }
 }

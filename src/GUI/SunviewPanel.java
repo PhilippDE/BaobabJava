@@ -75,17 +75,32 @@ public class SunviewPanel implements DataVisualizer {
         JMenuItem m = new JMenuItem("Open in " + OSDependingData.getFileViewer());
         m.setFont(GraphicsConstants.standardFont);
         m.setHorizontalAlignment(JMenuItem.LEFT);
-        m.addActionListener(e -> clickedNode.openInOSFileviewer());
+        m.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickedNode.openInOSFileviewer();
+            }
+        });
         popupMenu.add(m);
         m = new JMenuItem("Detailed View ");
         m.setFont(GraphicsConstants.standardFont);
         m.setHorizontalAlignment(JMenuItem.LEFT);
-        m.addActionListener(e -> clickedNode.createDetailedViewWindow());
+        m.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickedNode.createDetailedViewWindow();
+            }
+        });
         popupMenu.add(m);
         m = new JMenuItem("Analyze");
         m.setFont(GraphicsConstants.standardFont);
         m.setHorizontalAlignment(JMenuItem.LEFT);
-        m.addActionListener(e -> Mainframe.processNode(clickedNode));
+        m.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Mainframe.processNode(clickedNode);
+            }
+        });
         popupMenu.add(m);
 
         rootPanel = new JPanel();
@@ -149,13 +164,16 @@ public class SunviewPanel implements DataVisualizer {
         infoPanel = new JPanel();
         update = new JButton();
         update.setFont(GraphicsConstants.standardFont);
-        update.addActionListener(e -> {
-            layerCount = (Integer) layerCountField.getValue();
-            updateLayers();
-            drawPanel.repaint();
-            setColorsBasedOnAngle(this.superNode);
-            drawNode(superNode);
-            setNodeInformation(superNode.getName(), Node.sizeFormated(superNode.getSize()), superNode.getOwnPath().getAbsolutePath());
+        update.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                layerCount = (Integer) layerCountField.getValue();
+                SunviewPanel.this.updateLayers();
+                drawPanel.repaint();
+                setColorsBasedOnAngle(SunviewPanel.this.superNode);
+                SunviewPanel.this.drawNode(superNode);
+                SunviewPanel.this.setNodeInformation(superNode.getName(), Node.sizeFormated(superNode.getSize()), superNode.getOwnPath().getAbsolutePath());
+            }
         });
 
         //Preventing labels from growing when text's to large
@@ -415,36 +433,39 @@ public class SunviewPanel implements DataVisualizer {
      *
      * @param node the node to be drawn
      */
-    public void drawNode(Node node) {
-        new Thread(() -> {
-            startedRendering = true;
-            SunviewPanel.this.superNode = node;
-            updateLayers();
-            int size;
-            if (drawPanel.getWidth() == drawPanel.getHeight()) {
-                size = drawPanel.getWidth();
-            } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
-                size = drawPanel.getHeight();
-            } else {
-                size = drawPanel.getWidth();
-            }
-
-            buffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-            drawPanel.repaint();
-            double offset = 0;
-            double radius = 0;
-            for (Node n : node.getSubNodes()) {
-                radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
-                if (radius > degreeSpacer) {
-                    n.setAngleStart(offset);
-                    n.setAngleEnd(offset + radius);
-                    drawArc(radius, offset, 0, n.getOwnColor());
-                    drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
-                    offset += radius + degreeOffset;
+    public void drawNode(final Node node) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startedRendering = true;
+                SunviewPanel.this.superNode = node;
+                SunviewPanel.this.updateLayers();
+                int size;
+                if (drawPanel.getWidth() == drawPanel.getHeight()) {
+                    size = drawPanel.getWidth();
+                } else if (drawPanel.getWidth() > drawPanel.getHeight()) {
+                    size = drawPanel.getHeight();
+                } else {
+                    size = drawPanel.getWidth();
                 }
+
+                buffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                drawPanel.repaint();
+                double offset = 0;
+                double radius = 0;
+                for (Node n : node.getSubNodes()) {
+                    radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
+                    if (radius > degreeSpacer) {
+                        n.setAngleStart(offset);
+                        n.setAngleEnd(offset + radius);
+                        SunviewPanel.this.drawArc(radius, offset, 0, n.getOwnColor());
+                        SunviewPanel.this.drawNode(1, n, offset, ((double) n.getSize()) / ((double) node.getSize()));
+                        offset += radius + degreeOffset;
+                    }
+                }
+                startedRendering = false;
+                SunviewPanel.this.rootPanel.repaint();
             }
-            startedRendering = false;
-            SunviewPanel.this.rootPanel.repaint();
         }).start();
     }
 
@@ -483,6 +504,26 @@ public class SunviewPanel implements DataVisualizer {
         g.drawString("Calculating Node", drawPanel.getWidth() / 2 - 100, drawPanel.getHeight() / 2 - 70);
         rootPanel.repaint();
         this.superNode = null;
+    }
+
+    @Override
+    public void disable() {
+        for(Component j:infoPanel.getComponents()){
+            j.setEnabled(false);
+        }
+        for(Component j:drawPanel.getComponents()){
+            j.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void enable() {
+        for(Component j:infoPanel.getComponents()){
+            j.setEnabled(true);
+        }
+        for(Component j:drawPanel.getComponents()){
+            j.setEnabled(true);
+        }
     }
 
     /**
@@ -548,12 +589,14 @@ public class SunviewPanel implements DataVisualizer {
     private Node extractNode(double[] angleLayer) {
         Node mothernode = this.superNode;
         int counter = 0;
-        for (int i = 0; i < angleLayer[1] + 1; i++) {
-            for (Node n : mothernode.getSubNodes()) {
-                if (n.getAngleStart() < angleLayer[0] && angleLayer[0] < n.getAngleEnd()) {
-                    mothernode = n;
-                    counter++;
-                    break;
+        if(mothernode!=null) {
+            for (int i = 0; i < angleLayer[1] + 1; i++) {
+                for (Node n : mothernode.getSubNodes()) {
+                    if (n.getAngleStart() < angleLayer[0] && angleLayer[0] < n.getAngleEnd()) {
+                        mothernode = n;
+                        counter++;
+                        break;
+                    }
                 }
             }
         }

@@ -15,4 +15,9 @@ public interface DataVisualizer {
      */
     void displayClaculatingMesssage();
 
+
+    void disable();
+
+    void enable();
+
 }
