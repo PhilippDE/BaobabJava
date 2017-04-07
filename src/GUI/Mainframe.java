@@ -5,6 +5,7 @@ import Data.Node;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Marcel on 06.03.2017.
@@ -20,6 +21,10 @@ public class Mainframe extends JFrame {
     private JLabel currentPathLabel;
     private JLabel progressLabel;
     private JPanel displayPanel;
+    private JButton settingsButton;
+    private JToolBar toolBar;
+    private JToolBar.Separator chooseanalyzeSeperator;
+    private JToolBar.Separator analyzesettingsSeperator;
     private JLabel pathLabelStatic;
 
     private static Node supernode;
@@ -36,6 +41,7 @@ public class Mainframe extends JFrame {
         this.setMinimumSize(new Dimension(800, 540));
         this.setPreferredSize(new Dimension(960, 540));
         this.setSize(new Dimension(960, 540));
+        this.setTitle("Jaobab");
         this.pack();
         this.setVisible(true);
         instance=this;
@@ -49,7 +55,7 @@ public class Mainframe extends JFrame {
     private void createUIComponents() {
         rootPanel = new JPanel();
         chooseDirectoy = new JButton();
-        chooseDirectoy.setFont(GraphicsConstants.standardFont);
+        chooseDirectoy.setFont(GraphicsConstants.standardFontLarger);
         chooseDirectoy.addActionListener(e -> {
             JFileChooser fs = new JFileChooser(new File("c:"));
             fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -86,7 +92,7 @@ public class Mainframe extends JFrame {
         });
 
         analyzeButton = new JButton();
-        analyzeButton.setFont(GraphicsConstants.standardFont);
+        analyzeButton.setFont(GraphicsConstants.standardFontLarger);
         analyzeButton.addActionListener(e -> {
             if (supernode == null) {
                 JFileChooser fs = new JFileChooser(new File("c:"));
@@ -112,29 +118,7 @@ public class Mainframe extends JFrame {
             if (!pathChangedSinceLastAnalysis) return;
             pathChangedSinceLastAnalysis = false;
             currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
-            Thread background = new Thread(() -> {
-                sunview.displayClaculatingMesssage();
-                sunview.setNodeInformation(supernode.getName(), "-calculating-", supernode.getOwnPath().getAbsolutePath());
-                treeview.displayClaculatingMesssage();
-                if (supernode != null) {
-                    supernode.calculateSubnodes(this.progressLabel);
-                    this.progressLabel.setText("Calculating sizes");
-                    supernode.calculateSize();
-                    this.progressLabel.setText("Sorting nodes");
-                    supernode.sortNodesSizeReversed();
-                    this.progressLabel.setText("Preparing visualization");
-                    SunviewPanel.setColorsBasedOnAngle(supernode);
-                }
-                treeview.showNode(supernode);
-                sunview.drawNode(supernode);
-                sunview.setNodeInformation(supernode.getName(), supernode.sizeFormated(), supernode.getOwnPath().getAbsolutePath());
-                threadStarted = false;
-                this.progressLabel.setText("Ready");
-            });
-            if (!threadStarted) {
-                threadStarted = true;
-                background.start();
-            }
+            processNode(supernode);
         });
 
         displayPanel=new JPanel();
@@ -159,6 +143,21 @@ public class Mainframe extends JFrame {
 
         pathLabelStatic = new JLabel();
         pathLabelStatic.setFont(GraphicsConstants.standardFont);
+
+        settingsButton=new JButton();
+        settingsButton.setFont(GraphicsConstants.standardFont);
+        settingsButton.addActionListener((e -> {
+            new SettingsPanel();
+        }));
+
+        toolBar=new JToolBar();
+        toolBar.setFloatable(false);
+
+        chooseanalyzeSeperator=new JToolBar.Separator(new Dimension(10,20));
+        toolBar.add(chooseanalyzeSeperator);
+
+        analyzesettingsSeperator=new JToolBar.Separator(new Dimension(25,20));
+        toolBar.add(analyzesettingsSeperator);
     }
 
     public static Node getSupernode() {
@@ -166,9 +165,9 @@ public class Mainframe extends JFrame {
     }
 
     public static void processNode(Node node){
-        if (node==supernode) return;
         instance.currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
         Thread background = new Thread(() -> {
+            long start=System.currentTimeMillis();
             supernode=node;
             instance.sunview.displayClaculatingMesssage();
             instance. sunview.setNodeInformation(supernode.getName(), "-calculating-", supernode.getOwnPath().getAbsolutePath());
@@ -176,17 +175,42 @@ public class Mainframe extends JFrame {
             if (supernode != null) {
                 supernode.calculateSubnodes(instance.progressLabel);
                 instance.progressLabel.setText("Calculating sizes");
+                long millis=System.currentTimeMillis()-start;
+                System.out.println(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(millis),
+                        TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                ));
                 supernode.calculateSize();
                 instance.progressLabel.setText("Sorting nodes");
+                millis=System.currentTimeMillis()-start;
+                System.out.println(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(millis),
+                        TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                ));
                 supernode.sortNodesSizeReversed();
                 instance.progressLabel.setText("Preparing visualization");
+                millis=System.currentTimeMillis()-start;
+                System.out.println(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(millis),
+                        TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                ));
                 SunviewPanel.setColorsBasedOnAngle(supernode);
+                millis=System.currentTimeMillis()-start;
+                System.out.println(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(millis),
+                        TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                ));
             }
             instance.treeview.showNode(supernode);
             instance.sunview.drawNode(supernode);
             instance.sunview.setNodeInformation(supernode.getName(), supernode.sizeFormated(), supernode.getOwnPath().getAbsolutePath());
             instance.threadStarted = false;
             instance.progressLabel.setText("Ready");
+
         });
         if (!instance.threadStarted) {
             instance.threadStarted = true;

@@ -9,6 +9,8 @@ public class GraphicsConstants {
 
     public static Font standardFont=new Font("Arial",Font.PLAIN,15);
 
+    public static Font standardFontLarger=new Font("Arial",Font.PLAIN,16);
+
     public static Font  labelFont=new Font("",Font.PLAIN,16);
 
     public static int nameLabelX=200;
@@ -44,6 +46,9 @@ public class GraphicsConstants {
     public static int nodeViewerFULLHDX=350;
     public static int nodeViewerFULLHDY=460;
 
+    public static int settingsPanelFULLHDX=400;
+    public static int settingsPanelFULLHDY=1080;
+
 
 
     public static void update(){
@@ -65,7 +70,11 @@ public class GraphicsConstants {
         //nodeViewerFULLHDY=(int)(460*scaleFactor);
         treeRowHeight=(int)(22*scaleFactor);
 
+        settingsPanelFULLHDX=(int)(300*scaleFactor);
+        settingsPanelFULLHDY=(int)(200*scaleFactor);
+
         standardFont=new Font("Arial",Font.PLAIN,1+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
+        standardFontLarger=new Font("Arial",Font.PLAIN,2+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
         labelFont=new Font("Arial",Font.PLAIN,1+(int)Math.ceil(fontSizeLabelFULLHD*scaleFactor));
     }
 

@@ -52,7 +52,6 @@ public class SunviewPanel implements DataVisualizer {
         return rootPanel;
     }
 
-
     private class Sunpopup extends JPopupMenu {
         @Override
         public void show(Component c, int x, int y) {
@@ -60,7 +59,6 @@ public class SunviewPanel implements DataVisualizer {
             super.show(c, x, y);
         }
     }
-
 
     public SunviewPanel(TreeviewPanel treeviewPanel) {
         this.treeviewPanel = treeviewPanel;

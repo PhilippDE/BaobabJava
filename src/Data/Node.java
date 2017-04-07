@@ -2,6 +2,8 @@ package Data;
 
 import Data.Comparator.Sizecomparator;
 import Data.Comparator.SizecomparatorInversed;
+import Data.Threading.NotifyingThread;
+import Data.Threading.Threadmanager;
 import GUI.NodeView;
 
 import javax.swing.*;
@@ -11,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 
 /**
@@ -31,6 +34,24 @@ public class Node{
 
     private TreePath treePath;
 
+    private boolean finishedCalculating=false;
+
+
+    private class CalculateThread extends NotifyingThread{
+        private Node node;
+        private JLabel progress;
+
+        public CalculateThread(Node node,JLabel progress){
+            this.node=node;
+            this.progress=progress;
+            this.setListener(Threadmanager.getListener());
+        }
+
+        @Override
+        public void task(){
+            node.calculateSubnodesInner(progress);
+        }
+    }
 
     /**
      * Constructor using a file
@@ -77,9 +98,45 @@ public class Node{
             this.size=getSizeofFiles(this.ownPath);
         }else{
             for (Node subNode : subNodes) {
-                subNode.calculateSubnodes(progress);
+                if(Settings.multiThreading) {
+                    Threadmanager.addThread(new CalculateThread(subNode,progress));
+                }else{
+                    subNode.calculateSubnodesInner(progress);
+                }
             }
         }
+        boolean flag=true;
+        while(flag) {
+            flag=false;
+            for (Node n : subNodes) {
+                if (!n.finishedCalculating) {
+                    flag=true;
+                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        finishedCalculating=true;
+        return;
+    }
+
+    private void calculateSubnodesInner(JLabel progress){
+        File[] subDirectories=getSubdirectories(this.ownPath);
+        progress.setText("Mapping path: "+this.ownPath.getAbsolutePath());
+        for(int i=0;i<subNodes.length;i++){
+            subNodes[i]=new Node(subDirectories[i], this);
+        }
+        if(this.subNodes.length<1){
+            this.size=getSizeofFiles(this.ownPath);
+        }else{
+            for (Node subNode : subNodes) {
+                subNode.calculateSubnodesInner(progress);
+            }
+        }
+        this.finishedCalculating=true;
     }
 
     /**
