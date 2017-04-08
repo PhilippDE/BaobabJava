@@ -405,5 +405,17 @@ public class TreeviewPanel implements DataVisualizer {
         for(Component j:rootPanel.getComponents()){
             j.setEnabled(true);
         }
+        at.interrupt();
+        try {
+            while (at != null && at.isAlive()) {
+                run = false;
+                at.interrupt();
+                if (!at.isAlive()) {
+                    at = null;
+                }
+            }
+        }catch (NullPointerException ignored){
+        }
+        rootPanel.repaint();
     }
 }

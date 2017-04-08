@@ -23,7 +23,7 @@ public class NotifyingThread extends Thread {
     /**
      * Notifies this threads listener
      */
-    private final void notifyListener(){
+    private void notifyListener(){
         if(isInterrupted()){
             return;
         }
@@ -43,11 +43,9 @@ public class NotifyingThread extends Thread {
     public final void run(){
             try {
                 task();
-                if(Thread.interrupted()) {
-                    return;
-                }
             } finally {
-                notifyListener();
+                if(!Thread.interrupted())
+                    notifyListener();
             }
     }
 
