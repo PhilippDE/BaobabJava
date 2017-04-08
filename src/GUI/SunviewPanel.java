@@ -13,10 +13,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 
 /**
+ * This is the panel that will be responsible for creatin the sunburst view of the node
  * Created by Marcel on 06.03.2017.
  */
 public class SunviewPanel implements DataVisualizer {
-    Sunpopup popupMenu = new Sunpopup();
     private Node clickedNode = null;
     private JPanel rootPanel;
     private JPanel drawPanel;
@@ -37,12 +37,12 @@ public class SunviewPanel implements DataVisualizer {
     private static double ringFactor = 1.35;
     private static int layerCount = 7;
     private boolean startedRendering = false;
-    private boolean startedCalculating = false;
     private final static double layerBuffer = 2;
 
     private static double layerThickness = 50 * ringFactor * (5.0 / (double) layerCount);
     private static double layerOffset = 30 * ringFactor * (5.0 / (double) layerCount);
-    BufferedImage buffer = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage buffer = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage bufferAnimation = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 
     private Node superNode;
 
@@ -51,6 +51,9 @@ public class SunviewPanel implements DataVisualizer {
     private boolean run=true;
     private AnimationThread currentAnimation;
 
+    /**
+     * Custom thread for the calculating animation
+     */
     private class AnimationThread extends Thread{
         private int count=0;
 
@@ -62,8 +65,8 @@ public class SunviewPanel implements DataVisualizer {
                     return;
                 }
                 if(!startedRendering){
-                    buffer = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g = (Graphics2D) buffer.getGraphics();
+                    bufferAnimation = new BufferedImage(drawPanel.getWidth(), drawPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = (Graphics2D) bufferAnimation.getGraphics();
                     g.setColor(Color.darkGray);
                     g.setFont(new Font("Arial", Font.BOLD, 35));
                     String draw="Calculating";
@@ -79,7 +82,6 @@ public class SunviewPanel implements DataVisualizer {
                             draw+=" . . ";
                             count++;
                             break;
-
                         case 3:
                             draw+=" . . .";
                             count = 0;
@@ -107,11 +109,9 @@ public class SunviewPanel implements DataVisualizer {
         }
     }
 
-
-    public JPanel getRootPanel(){
-        return rootPanel;
-    }
-
+    /**
+     * Custom Popup for the drawpanel
+     */
     private class Sunpopup extends JPopupMenu {
         @Override
         public void show(Component c, int x, int y) {
@@ -120,7 +120,8 @@ public class SunviewPanel implements DataVisualizer {
         }
     }
 
-    public SunviewPanel(TreeviewPanel treeviewPanel) {
+
+    SunviewPanel(TreeviewPanel treeviewPanel) {
         this.treeviewPanel = treeviewPanel;
     }
 
@@ -129,7 +130,7 @@ public class SunviewPanel implements DataVisualizer {
      */
     private void createUIComponents() {
 
-        popupMenu = new Sunpopup();
+        Sunpopup popupMenu = new Sunpopup();
         popupMenu.setFont(GraphicsConstants.standardFont);
 
         JMenuItem m = new JMenuItem("Open in " + OSDependingData.getFileViewer());
@@ -179,7 +180,12 @@ public class SunviewPanel implements DataVisualizer {
                     } else {
                         size = drawPanel.getWidth();
                     }
-                    g.drawImage(scale(buffer, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
+                    if(!run){
+                        g.drawImage(scale(buffer, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
+                    }else{
+                        g.drawImage(scale(bufferAnimation, size, (double) size / (double) buffer.getHeight()), 0, 0, null);
+
+                    }
                 }
             }
         };
@@ -286,7 +292,7 @@ public class SunviewPanel implements DataVisualizer {
      * @param layer        the layer starting at 0 in the most inner layer
      * @param color        the color that will be used for drawing
      */
-    public void drawArc(double degree, double degreeOffset, int layer, @Nullable Color color) {
+    private void drawArc(double degree, double degreeOffset, int layer, @Nullable Color color) {
         //Calculating where the arc would end in
         double totalAngle = degree + degreeOffset;
 
@@ -493,13 +499,13 @@ public class SunviewPanel implements DataVisualizer {
      *
      * @param node the node to be drawn
      */
-    public void drawNode(final Node node) {
+    void drawNode(final Node node) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 startedRendering=true;
                 try {
-                    while (currentAnimation.isAlive()) {
+                    while (currentAnimation != null && currentAnimation.isAlive()) {
                         run = false;
                         currentAnimation.interrupt();
                         if (!currentAnimation.isAlive()) {
@@ -507,7 +513,6 @@ public class SunviewPanel implements DataVisualizer {
                         }
                     }
                 }catch (NullPointerException ignored){
-                    System.out.println("Thread is null");
                 }
                 startedRendering = true;
                 SunviewPanel.this.superNode = node;
@@ -524,7 +529,7 @@ public class SunviewPanel implements DataVisualizer {
                 buffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
                 drawPanel.repaint();
                 double offset = 0;
-                double radius = 0;
+                double radius;
                 for (Node n : node.getSubNodes()) {
                     radius = 360 * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
                     if (radius > degreeSpacer) {
@@ -552,7 +557,7 @@ public class SunviewPanel implements DataVisualizer {
     private void drawNode(int layer, Node node, double offset_, double percentage) {
         if (layer < layerCount) {
             double offset = offset_;
-            double radius = 0;
+            double radius ;
             for (Node n : node.getSubNodes()) {
                 radius = 360 * percentage * ((double) n.getSize()) / ((double) node.getSize()) - degreeOffset;
                 if (radius > degreeSpacer) {
@@ -709,6 +714,10 @@ public class SunviewPanel implements DataVisualizer {
         }
     }
 
+    public JPanel getRootPanel(){
+        return rootPanel;
+    }
+
     /**
      * Scales the image for a given pixel size and scaling factor
      *
@@ -717,11 +726,10 @@ public class SunviewPanel implements DataVisualizer {
      * @param fSize           x-factor for transformation / scaling
      * @return scaled image
      */
-    public static BufferedImage scale(BufferedImage source, int sizeDestination, double fSize) {
+    static BufferedImage scale(BufferedImage source, int sizeDestination, double fSize) {
         BufferedImage dbi = null;
         if (source != null) {
             dbi = new BufferedImage(sizeDestination, sizeDestination, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = dbi.createGraphics();
             AffineTransform at = AffineTransform.getScaleInstance(fSize, fSize);
             try {
                 AffineTransformOp atp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
@@ -738,7 +746,7 @@ public class SunviewPanel implements DataVisualizer {
      *
      * @param supernode the mothernode/supernode
      */
-    public static void setColorsBasedOnAngle(Node supernode) {
+    static void setColorsBasedOnAngle(Node supernode) {
         int count = 0;
 
         for (int i = 0; i < supernode.getSubNodes().length; i++) {
@@ -800,7 +808,7 @@ public class SunviewPanel implements DataVisualizer {
      * @param name the name that will be set
      * @param size the size that will be set
      */
-    public void setNodeInformation(String name, String size, String path) {
+    void setNodeInformation(String name, String size, String path) {
         this.nameLabel.setText(name);
         this.sizeLabel.setText(size);
         this.fullPathArea.setText(path);
@@ -811,7 +819,7 @@ public class SunviewPanel implements DataVisualizer {
      *
      * @param n the node that will be "written" on the labels
      */
-    public void setNodeInformation(Node n) {
+    private void setNodeInformation(Node n) {
         setNodeInformation(n.getName(), Node.sizeFormated(n.getSize()), n.getOwnPath().getAbsolutePath());
     }
 

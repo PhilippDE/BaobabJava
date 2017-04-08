@@ -8,15 +8,13 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
+ * The custom JTree that will be used to display the tree hierarchy of the nodes
  * Created by Philipp on 17.03.2017.
  */
 public class Tree extends JTree {
 
-    private DefaultMutableTreeNode rootNode;
-
-    public Tree(DefaultMutableTreeNode node) {
+    Tree(DefaultMutableTreeNode node) {
         super(node);
-        rootNode = node;
         this.setRowHeight(22);
     }
 
@@ -29,7 +27,6 @@ public class Tree extends JTree {
             if(node != null) {
                 Rectangle bounds = getRowBounds(i);
                 double percent = node.getUsagePercentOfParent();
-                Color c = new Color(Color.HSBtoRGB((float)(1-percent)/3, 1, 1));
                 g.setColor(node.getOwnColor());
                 int boxWidth = (int)((getWidth()/4) * percent);
                 g.fillRect((getWidth()-boxWidth)-3, (int)bounds.getY()+5, boxWidth, (int)bounds.getHeight()-9);
@@ -42,6 +39,11 @@ public class Tree extends JTree {
         }
     }
 
+    /**
+     * Returns the Node object that is in that given TreePath
+     * @param path the path that will be checked
+     * @return the node at that position; May return null if there is no node object at the given path
+     */
     private Node getNode(TreePath path) {
         DefaultMutableTreeNode tn = (DefaultMutableTreeNode)path.getLastPathComponent();
         Node node;
@@ -51,5 +53,16 @@ public class Tree extends JTree {
         } catch(ClassCastException e) {
             return null;
         }
+    }
+
+
+    /**
+     * Returns the node tath is at the given X and Y coordinate in the tree
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the node that is at that position
+     */
+    Node getNodeFromXY(int x, int y){
+        return getNode(this.getPathForLocation(x,y));
     }
 }

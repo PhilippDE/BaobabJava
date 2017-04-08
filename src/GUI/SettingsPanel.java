@@ -24,7 +24,7 @@ public class SettingsPanel extends JFrame{
     private JButton applyButton;
     private JButton cancelButton;
 
-    public SettingsPanel(){
+    SettingsPanel(){
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -45,26 +45,30 @@ public class SettingsPanel extends JFrame{
         rootPanel=new JPanel();
 
         contentPanel=new JPanel();
+        contentPanel.setFont(GraphicsConstants.standardFont);
 
         multithreadingCheck=new JCheckBox();
         multithreadingCheck.setFont(GraphicsConstants.standardFont);
         multithreadingCheck.setSelected(Settings.multiThreading);
 
+        //Label for threadcount textfield
         threadcountLabel=new JLabel();
         threadcountLabel.setFont(GraphicsConstants.standardFont);
 
+        //Numberformatter needed so user only can input numbers
         NumberFormat format = NumberFormat.getInstance();
         NumberFormatter formatter = new NumberFormatter(format);
         formatter.setValueClass(Integer.class);
         formatter.setMinimum(0);
         formatter.setMaximum(Integer.MAX_VALUE);
         formatter.setAllowsInvalid(true);
-        // If you want the value to be committed on each keystroke instead of focus lost
         formatter.setCommitsOnValidEdit(true);
 
+        //Textfield showing the maximum amount of threads available. The user can change this be editing the text
         threadCountLimit=new JFormattedTextField(formatter);
         threadCountLimit.setValue(Settings.threadCountLimit);
 
+        //Button for applying changes
         applyButton=new JButton();
         applyButton.setFont(GraphicsConstants.standardFont);
         applyButton.addActionListener(new ActionListener() {
@@ -76,6 +80,7 @@ public class SettingsPanel extends JFrame{
             }
         });
 
+        //Cancel button; when clicked window closes and settings are not changed
         cancelButton=new JButton();
         cancelButton.setFont(GraphicsConstants.standardFont);
         cancelButton.addActionListener(new ActionListener() {

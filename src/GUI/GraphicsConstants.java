@@ -3,32 +3,22 @@ package GUI;
 import java.awt.*;
 
 /**
+ * This class holds all values and constants for the graphics, such as fonts or label sizes
  * Created by Marcel on 06.04.2017.
  */
-public class GraphicsConstants {
+class GraphicsConstants {
 
-    public static Font standardFont=new Font("Arial",Font.PLAIN,15);
+    static Font standardFont=new Font("Arial",Font.PLAIN,15);
 
-    public static Font standardFontLarger=new Font("Arial",Font.PLAIN,16);
+    static Font standardFontLarger=new Font("Arial",Font.PLAIN,16);
 
-    public static Font  labelFont=new Font("",Font.PLAIN,16);
+    static Font  labelFont=new Font("",Font.PLAIN,16);
 
-    public static int nameLabelX=200;
-    public static int nameLabelY=40;
+    static int nameLabelX=200;
+    static int nameLabelY=40;
 
-    public static final int Width4K=4096;
-    public static final int Height4K=2160;
-
-    private static final int nLabelXF4k=400;
-    private static final int nLabelYF4k=80;
-
-    private static final int fontSizeF4K=11;
-    private static final int fontSizeLabelF4K=11;
-
-
-
-    public static final int WidthFULLHD=1920;
-    public static final int HeightFULLHD=1080;
+    private static final int WidthFULLHD=1920;
+    private static final int HeightFULLHD=1080;
 
     private static final int nLabelXFHD=150;
     private static final int nLabelYFHD=40;
@@ -36,22 +26,22 @@ public class GraphicsConstants {
     private static final int fontSizeFULLHD=11;
     private static final int fontSizeLabelFULLHD=11;
 
-    public static int sunviewPrefferedFULLHDX=1200;
-    public static int sunviewPrefferedFULLHDY=1080;
+    static int sunviewPrefferedFULLHDX=1200;
+    static int sunviewPrefferedFULLHDY=1080;
 
-    public static int treeviewPrefferedFULLHDX=400;
-    public static int treeviewPrefferedFULLHDY=1080;
-    public static int treeRowHeight=22;
+    static int treeviewPrefferedFULLHDX=400;
+    static int treeviewPrefferedFULLHDY=1080;
+    static int treeRowHeight=22;
 
-    public static int nodeViewerFULLHDX=350;
-    public static int nodeViewerFULLHDY=460;
+    static int nodeViewerFULLHDX=350;
+    static int nodeViewerFULLHDY=460;
 
-    public static int settingsPanelFULLHDX=400;
-    public static int settingsPanelFULLHDY=1080;
+    static int settingsPanelFULLHDX=400;
+    static int settingsPanelFULLHDY=1080;
 
 
 
-    public static void update(){
+    private static void update(){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();

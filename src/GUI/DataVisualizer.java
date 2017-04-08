@@ -1,6 +1,7 @@
 package GUI;
 
 /**
+ * This interface enables the mainframe to interact with the visualizations panels properly
  * Created by Marcel on 25.03.2017.
  */
 public interface DataVisualizer {
@@ -15,9 +16,16 @@ public interface DataVisualizer {
      */
     void displayClaculatingMesssage();
 
-
+    /**
+     * This method will be called when the component should NOT be accessible, respond to user input and
+     * create the effect of being responsive
+     */
     void disable();
 
+    /**
+     * This method will be called when the component should be accessible, respond to user input and
+     * create the effect of being responsive
+     */
     void enable();
 
 }

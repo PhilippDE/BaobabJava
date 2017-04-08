@@ -1,6 +1,8 @@
 package GUI;
 
 import Data.Node;
+import Data.Threading.NotifyingThread;
+import Data.Threading.ThreadFinishedListener;
 import Data.Threading.Threadmanager;
 
 import javax.swing.*;
@@ -8,10 +10,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * The main GUI of this program
  * Created by Marcel on 06.03.2017.
  */
 public class Mainframe extends JFrame {
@@ -40,7 +42,7 @@ public class Mainframe extends JFrame {
 
     private static Mainframe instance;
 
-    public Mainframe() {
+    private Mainframe() {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setContentPane(this.rootPanel);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -77,9 +79,7 @@ public class Mainframe extends JFrame {
                             Node n = new Node(input);
                             // check if the node hasn't changed
                             if (supernode != null) {
-                                if (n.getOwnPath().getAbsolutePath().equals(supernode.getOwnPath().getAbsolutePath())) {
-                                    // path hasn't changed
-                                } else {
+                                if (!n.getOwnPath().getAbsolutePath().equals(supernode.getOwnPath().getAbsolutePath())) {
                                     // path changed
                                     pathChangedSinceLastAnalysis = true;
                                 }
@@ -88,7 +88,6 @@ public class Mainframe extends JFrame {
                                 pathChangedSinceLastAnalysis = true;
                             }
                             supernode = new Node(input);
-                        } else {
                         }
                         fs.setVisible(false);
                         break;
@@ -118,7 +117,6 @@ public class Mainframe extends JFrame {
                                 if (input.exists()) {
                                     supernode = new Node(input);
                                     pathChangedSinceLastAnalysis = true;
-                                } else {
                                 }
                                 fs.setVisible(false);
                                 break;
@@ -141,7 +139,7 @@ public class Mainframe extends JFrame {
 
                     Threadmanager.stopThreads();
                     sunview.enable();
-                    treeview.enable();
+                    treeview.restore();
                     enableComponents();
                     threadStarted=false;
                     progressLabel.setText("Ready");
@@ -194,11 +192,7 @@ public class Mainframe extends JFrame {
         pathLabelStatic.setFont(GraphicsConstants.standardFont);
     }
 
-    public static Node getSupernode() {
-        return supernode;
-    }
-
-    public static void processNode(final Node node){
+    static void processNode(final Node node){
         instance.currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
         background = new Thread(){
             @Override
@@ -274,13 +268,31 @@ public class Mainframe extends JFrame {
                     return;
                 }
 
+
                 instance.sunview.enable();
+
+                instance.progressLabel.setText("Creating diagramms");
+                final long finalMillis = System.currentTimeMillis() - start;
+                final long millisTree=System.currentTimeMillis();
+                ThreadFinishedListener threadListener=new ThreadFinishedListener() {
+                    @Override
+                    public void notifyThreadFinished(NotifyingThread thread) {
+                        long millTree=System.currentTimeMillis()-millisTree;
+                        instance.progressLabel.setText("Finished in " + String.format("%d min, %d sec",
+                                TimeUnit.MILLISECONDS.toMinutes(finalMillis+millTree),
+                                TimeUnit.MILLISECONDS.toSeconds(finalMillis+millTree) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(finalMillis+millTree)))
+                        );
+                    }
+                };
+                instance.treeview.showNode(supernode,threadListener);
+                instance.sunview.drawNode(supernode);
                 instance.treeview.enable();
+
+
                 instance.enableComponents();
 
 
-                instance.treeview.showNode(supernode);
-                instance.sunview.drawNode(supernode);
 
                 //Checking if interrupted so thread stops
                 if(Thread.interrupted()) {
@@ -290,10 +302,6 @@ public class Mainframe extends JFrame {
 
                 instance.threadStarted = false;
 
-                instance.progressLabel.setText("Finished calculating in " + String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(millis),
-                        TimeUnit.MILLISECONDS.toSeconds(millis) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))));
 
             }
         };
@@ -303,12 +311,12 @@ public class Mainframe extends JFrame {
         }
     }
 
-    public void disableComponents(){
+    private void disableComponents(){
         chooseDirectoy.setEnabled(false);
         settingsButton.setEnabled(false);
         analyzeButton.setText("Cancel");
     }
-    public void enableComponents() {
+    private void enableComponents() {
         chooseDirectoy.setEnabled(true);
         settingsButton.setEnabled(true);
         analyzeButton.setText("Analyze");
@@ -319,8 +327,7 @@ public class Mainframe extends JFrame {
         } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        Mainframe mf = new Mainframe();
-        return;
+        new Mainframe();
     }
 
 }

@@ -14,7 +14,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Comparator;
 
 /**
@@ -132,7 +131,6 @@ public class Node{
             }
         }
         finishedCalculating=true;
-        return;
     }
 
     private void calculateSubnodesInner(JLabel progress){
@@ -222,8 +220,8 @@ public class Node{
                 }
             }
         }catch (NullPointerException ignored){}
-        for(int i=0;i<this.subNodes.length;i++){
-            files+=this.subNodes[i].getFilesCountRecursively();
+        for (Node subNode : this.subNodes) {
+            files += subNode.getFilesCountRecursively();
         }
         return files;
     }
@@ -342,15 +340,13 @@ public class Node{
     }
 
     /**
-     * Rounds a number using the default round method (round down till 4, round up after 4)
+     * Rounds a number using the default round method (round down till 4, round up after 4).
+     * The number will be round to two digits
      * @param value the value
-     * @param places the number of places to round to
      * @return the rounded number
      */
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        long factor = (long) Math.pow(10, places);
+    public static double round(double value) {
+        long factor = (long) Math.pow(10, 2);
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
@@ -394,15 +390,15 @@ public class Node{
         if(size<Math.pow(1024,1)){
             return size+"B";
         }if(size<Math.pow(1024,2)) {
-            return round((double) size / (Math.pow(1024, 1)),2) + "KB";
+            return round((double) size / (Math.pow(1024, 1))) + "KB";
         }if(size<Math.pow(1024,3)) {
-            return round((double) size / (Math.pow(1024, 2)),2) + "MB";
+            return round((double) size / (Math.pow(1024, 2))) + "MB";
         }if(size<Math.pow(1024,4)) {
-            return round((double) size / (Math.pow(1024, 3)),2) + "GB";
+            return round((double) size / (Math.pow(1024, 3))) + "GB";
         }if(size<Math.pow(1024,5)) {
-            return round((double) size / (Math.pow(1024, 4)),2) + "TB";
+            return round((double) size / (Math.pow(1024, 4))) + "TB";
         }if(size<Math.pow(1024,6)) {
-            return round((double) size / (Math.pow(1024, 5)),2) + "PB";
+            return round((double) size / (Math.pow(1024, 5))) + "PB";
         }else{
             return size+"B";
         }

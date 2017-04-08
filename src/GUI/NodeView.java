@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * This window will show all information about the passed node object
  * Created by Marcel on 05.04.2017.
  */
 public class NodeView extends JFrame {
