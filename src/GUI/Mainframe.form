@@ -139,6 +139,16 @@
               <text value="Settings"/>
             </properties>
           </component>
+          <component id="6b48f" class="javax.swing.JToolBar$Separator" binding="settingshelpSeperator" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="59413" class="javax.swing.JButton" binding="helpButton" custom-create="true">
+            <constraints/>
+            <properties>
+              <text value="Help"/>
+            </properties>
+          </component>
         </children>
       </toolbar>
       <component id="90bc0" class="javax.swing.JLabel" binding="pathLabelStatic" custom-create="true">

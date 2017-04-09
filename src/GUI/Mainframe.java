@@ -32,6 +32,8 @@ public class Mainframe extends JFrame {
     private JToolBar.Separator chooseanalyzeSeperator;
     private JToolBar.Separator analyzesettingsSeperator;
     private JLabel pathLabelStatic;
+    private JToolBar.Separator settingshelpSeperator;
+    private JButton helpButton;
 
     private static Node supernode;
 
@@ -187,6 +189,18 @@ public class Mainframe extends JFrame {
 
         analyzesettingsSeperator=new JToolBar.Separator(new Dimension(25,20));
         toolBar.add(analyzesettingsSeperator);
+
+        settingshelpSeperator=new JToolBar.Separator(new Dimension(10, 20));
+        toolBar.add(settingshelpSeperator);
+
+        helpButton=new JButton();
+        helpButton.setFont(GraphicsConstants.standardFont);
+        helpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new HelpPanel();
+            }
+        });
 
         pathLabelStatic=new JLabel();
         pathLabelStatic.setFont(GraphicsConstants.standardFont);
