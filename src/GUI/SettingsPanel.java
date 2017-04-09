@@ -23,6 +23,9 @@ public class SettingsPanel extends JFrame{
     private JLabel threadcountLabel;
     private JButton applyButton;
     private JButton cancelButton;
+    private JCheckBox multithreadingTree;
+    private JFormattedTextField threadcountlimittree;
+    private JLabel threadcountLabeltree;
 
     SettingsPanel(){
         EventQueue.invokeLater(new Runnable() {
@@ -49,11 +52,13 @@ public class SettingsPanel extends JFrame{
 
         multithreadingCheck=new JCheckBox();
         multithreadingCheck.setFont(GraphicsConstants.standardFont);
-        multithreadingCheck.setSelected(Settings.multiThreading);
+        multithreadingCheck.setSelected(Settings.multiThreadingProcessing);
 
         //Label for threadcount textfield
         threadcountLabel=new JLabel();
         threadcountLabel.setFont(GraphicsConstants.standardFont);
+
+
 
         //Numberformatter needed so user only can input numbers
         NumberFormat format = NumberFormat.getInstance();
@@ -66,7 +71,20 @@ public class SettingsPanel extends JFrame{
 
         //Textfield showing the maximum amount of threads available. The user can change this be editing the text
         threadCountLimit=new JFormattedTextField(formatter);
-        threadCountLimit.setValue(Settings.threadCountLimit);
+        threadCountLimit.setValue(Settings.threadCountLimitProcessing);
+
+        //Checkbox for tree multithreading
+        multithreadingTree=new JCheckBox();
+        multithreadingTree.setFont(GraphicsConstants.standardFont);
+        multithreadingTree.setSelected(Settings.multiThreadingTree);
+
+        //Label for threadcount tree label
+        threadcountLabeltree =new JLabel();
+        threadcountLabeltree.setFont(GraphicsConstants.standardFont);
+
+        //Textfield showing the maximum amount of threads available. The user can change this be editing the text
+        threadcountlimittree=new JFormattedTextField(formatter);
+        threadcountlimittree.setValue(Settings.threadCountLimitTree);
 
         //Button for applying changes
         applyButton=new JButton();
@@ -74,8 +92,10 @@ public class SettingsPanel extends JFrame{
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Settings.multiThreading = multithreadingCheck.isSelected();
-                Settings.threadCountLimit = (Integer) threadCountLimit.getValue();
+                Settings.multiThreadingProcessing = multithreadingCheck.isSelected();
+                Settings.threadCountLimitProcessing = (Integer) threadCountLimit.getValue();
+                Settings.multiThreadingTree = multithreadingTree.isSelected();
+                Settings.threadCountLimitTree = (Integer) threadcountlimittree.getValue();
                 SettingsPanel.this.dispose();
             }
         });

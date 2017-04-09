@@ -3,7 +3,8 @@ package Data.Threading;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
-import static Data.Settings.threadCountLimit;
+import static Data.Settings.threadCountLimitProcessing;
+import static Data.Settings.threadCountLimitTree;
 
 /**
  * This class manages the threads and controls that the amount of threads do not exceed the threadlimit set in the
@@ -13,7 +14,8 @@ import static Data.Settings.threadCountLimit;
  */
 public final class Threadmanager implements ThreadFinishedListener{
 
-    private static ArrayList<NotifyingThread> threads=new ArrayList<>();
+    private static ArrayList<NotifyingThread> threadsProcessing=new ArrayList<>();
+    private static ArrayList<NotifyingThread> threadsTree=new ArrayList<>();
 
     private static boolean end=false;
 
@@ -35,26 +37,66 @@ public final class Threadmanager implements ThreadFinishedListener{
      * @see NotifyingThread
      * @see ThreadFinishedListener
      */
-    public static void addThread(NotifyingThread thread){
+    public static void addThreadProcessing(NotifyingThread thread){
         if(!end) {
-            threads.add(thread);
+            threadsProcessing.add(thread);
             int count = 0;
             boolean flag=true;
             while(flag) {
                 try{
                     flag=false;
-                    for (NotifyingThread t : threads) {
+                    for (NotifyingThread t : threadsProcessing) {
                         if (t.isAlive()) {
                             count++;
                         }
                     }
                 }
                 catch (ConcurrentModificationException ignored) {
-                    System.out.println("CCM in Threadmanager adding");
+                    System.err.println("CCM \n      in Threadmanager adding to processing list");
                     flag=true;
                 }
             }
-            if (count < threadCountLimit)
+            if (count < threadCountLimitProcessing)
+                thread.start();
+        }
+    }
+
+    /**
+     * Adds a thread to the list of threads that will be done.
+     *
+     * Note that the thread may not be started instantly as the maximum threadlimit may be reached.
+     * In this case the thread will be called depending on which position the thread is in the list. Threads that have
+     * been added earlier will be started earlier.
+     *
+     * Note that the thread also needs to be NotifyingThread or extend that class in order for the Threadmanager to
+     * work, since every thread that will be added will get the default ThreadFinishedListener of this class set at
+     * its own ThreadFinishedListener
+     *
+     * @param thread  the thread that will be handled by this class
+     *
+     * @see NotifyingThread
+     * @see ThreadFinishedListener
+     */
+    public static void addThreadTree(NotifyingThread thread){
+        if(!end) {
+            threadsTree.add(thread);
+            int count = 0;
+            boolean flag=true;
+            while(flag) {
+                try{
+                    flag=false;
+                    for (NotifyingThread t : threadsTree) {
+                        if (t.isAlive()) {
+                            count++;
+                        }
+                    }
+                }
+                catch (ConcurrentModificationException ignored) {
+                    System.err.println("CCM \n      in Threadmanager adding to tree list");
+                    flag=true;
+                }
+            }
+            if (count < threadCountLimitTree)
                 thread.start();
         }
     }
@@ -72,30 +114,60 @@ public final class Threadmanager implements ThreadFinishedListener{
 
     @Override
     public void notifyThreadFinished(NotifyingThread thread) {
-        threads.remove(thread);
-        int count=0;
-        if(!end) {
-            boolean flag=true;
-            while(flag) {
-                try{
-                    flag=false;
-                for (NotifyingThread t : threads) {
-                    if (t.isAlive()) {
-                        count++;
-                    } else {
-                        if (count < threadCountLimit) {
-                            try {
-                                t.start();
-                            } catch (IllegalThreadStateException ignored) {
+        if(threadsProcessing.contains(thread)) {
+            threadsProcessing.remove(thread);
+            int count = 0;
+            if (!end) {
+                boolean flag = true;
+                while (flag) {
+                    try {
+                        flag = false;
+                        for (NotifyingThread t : threadsProcessing) {
+                            if (t.isAlive()) {
+                                count++;
+                            } else {
+                                if (count < threadCountLimitProcessing) {
+                                    try {
+                                        t.start();
+                                    } catch (IllegalThreadStateException ignored) {
 
-                            }
-                               count++;
+                                    }
+                                    count++;
+                                }
                             }
                         }
+                    } catch (ConcurrentModificationException ignored) {
+                        System.err.println("CCM \n      in Threadmanager notification of processing list thread");
+                        flag = true;
                     }
-                } catch (ConcurrentModificationException ignored) {
-                    System.out.println("CCM in Threadmanager notification");
-                    flag=true;
+                }
+            }
+        }else if(threadsTree.contains(thread)){
+            threadsTree.remove(thread);
+            int count = 0;
+            if (!end) {
+                boolean flag = true;
+                while (flag) {
+                    try {
+                        flag = false;
+                        for (NotifyingThread t : threadsTree) {
+                            if (t.isAlive()) {
+                                count++;
+                            } else {
+                                if (count < threadCountLimitProcessing) {
+                                    try {
+                                        t.start();
+                                    } catch (IllegalThreadStateException ignored) {
+
+                                    }
+                                    count++;
+                                }
+                            }
+                        }
+                    } catch (ConcurrentModificationException ignored) {
+                        System.err.println("CCM \n      in Threadmanager notification of tree list thread");
+                        flag = true;
+                    }
                 }
             }
         }
@@ -108,28 +180,49 @@ public final class Threadmanager implements ThreadFinishedListener{
      */
     public static void stopThreads(){
         end=true;
-                boolean flag=true;
-                while(flag&& threads.size()!=0) {
-                    try {
-                        flag=false;
-                        for (NotifyingThread t : threads) {
-                            while(t.isAlive()) {
-                                t.interrupt();
+        boolean flag=true;
+        while(flag&& threadsProcessing.size()!=0) {
+            try {
+                flag=false;
+                for (NotifyingThread t : threadsProcessing) {
+                    while(t.isAlive()) {
+                        t.interrupt();
 
-                                if (t.isInterrupted() && !t.isAlive()) {
-                                    threads.remove(t);
-                                }
-                            }
-                            if(!t.isAlive()){
-                                threads.remove(t);
-                            }
+                        if (t.isInterrupted() && !t.isAlive()) {
+                            threadsProcessing.remove(t);
                         }
                     }
-                    catch (ConcurrentModificationException ignored) {
-                        flag=true;
+                    if(!t.isAlive()){
+                        threadsProcessing.remove(t);
                     }
                 }
-                end=false;
+            }
+            catch (ConcurrentModificationException ignored) {
+                flag=true;
+            }
+        }
+        flag=true;
+        while(flag&& threadsTree.size()!=0) {
+            try {
+                flag=false;
+                for (NotifyingThread t : threadsTree) {
+                    while(t.isAlive()) {
+                        t.interrupt();
+
+                        if (t.isInterrupted() && !t.isAlive()) {
+                            threadsTree.remove(t);
+                        }
+                    }
+                    if(!t.isAlive()){
+                        threadsTree.remove(t);
+                    }
+                }
+            }
+            catch (ConcurrentModificationException ignored) {
+                flag=true;
+            }
+        }
+        end=false;
     }
 
     /**

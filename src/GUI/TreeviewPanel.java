@@ -102,6 +102,7 @@ public class TreeviewPanel implements DataVisualizer {
 
     private class TreeThread extends NotifyingThread{
 
+        private int askedcount=0;
         private boolean finished=false;
         private Node own;
         private DefaultMutableTreeNode dfm;
@@ -113,10 +114,19 @@ public class TreeviewPanel implements DataVisualizer {
 
         @Override
         public void task(){
-            if (own.getSubNodes().length > 0) {
-                addSubnodesToTreeInner(this.own,this.dfm);
+            try {
+                if (own.getSubNodes().length > 0) {
+                    addSubnodesToTreeInner(this.own, this.dfm);
+                }
+            }catch (Exception unexspected){
+                unexspected.printStackTrace();
+            }finally {
+                finished = true;
             }
-            finished=true;
+        }
+
+        private boolean isFinished(){
+            return askedcount > 300 || finished;
         }
     }
 
@@ -189,36 +199,40 @@ public class TreeviewPanel implements DataVisualizer {
     private void addSubnodesToTree(Node node, DefaultMutableTreeNode treeNode) {
         // iterate through every subnode of the given node
         TreeThread[] threads = new TreeThread[node.getSubNodes().length];
+        boolean[] processed=new boolean[node.getSubNodes().length];
         int count=0;
-        if(Settings.multiThreading) {
+        if(Settings.multiThreadingTree) {
             for (Node n : node.getSubNodes()) {
-                // create a DefaultMutableTreeNode object for the subnode
-                DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
-                // add the DefaultMutableTreeNode to the upper tree node
-                treeNode.add(newTreeNode);
-                n.setTreePath(getPath(newTreeNode));
-                // if the subnode contains subnodes add them too
                 if (n.getUsagePercentOfParent() > 0.05) {
-                    System.out.println("Creating thread");
-                    threads[count] = new TreeThread(n, newTreeNode);
-                    Threadmanager.addThread(threads[count]);
-                    count++;
-                }
-                // add the information about the files in the subnode
-                addFilesToTree(n, newTreeNode);
-            }
-            for(Node n:node.getSubNodes()){
-                // create a DefaultMutableTreeNode object for the subnode
+                    // create a DefaultMutableTreeNode object for the subnode
                 DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
                 // add the DefaultMutableTreeNode to the upper tree node
                 treeNode.add(newTreeNode);
                 n.setTreePath(getPath(newTreeNode));
                 // if the subnode contains subnodes add them too
-                if (n.getUsagePercentOfParent() <= 0.05) {
-                    addSubnodesToTreeInner(n,newTreeNode);
-                }
+                 System.out.println("Creating thread for path"+n.getName());
+                threads[count] = new TreeThread(n, newTreeNode);
+                Threadmanager.addThreadTree(threads[count]);
+                processed[count]=true;
                 // add the information about the files in the subnode
-                addFilesToTree(n, newTreeNode);
+                count++;
+                }
+
+            }
+            count=0;
+            for(Node n:node.getSubNodes()){
+                if(!processed[count]) {
+                    // create a DefaultMutableTreeNode object for the subnode
+                    DefaultMutableTreeNode newTreeNode = new DefaultMutableTreeNode(n);
+                    // add the DefaultMutableTreeNode to the upper tree node
+                    treeNode.add(newTreeNode);
+                    n.setTreePath(getPath(newTreeNode));
+                    // if the subnode contains subnodes add them too
+                    addSubnodesToTreeInner(n, newTreeNode);
+                    // add the information about the files in the subnode
+                    addFilesToTree(n, newTreeNode);
+                }
+                count++;
             }
         }else{
             for(Node n:node.getSubNodes()){
@@ -241,7 +255,7 @@ public class TreeviewPanel implements DataVisualizer {
             }
             flag=false;
             for (TreeThread t : threads) {
-                if (t!=null&&!t.finished) {
+                if (t!=null&&!t.isFinished()) {
                     flag=true;
                     System.out.println(t.own.getName());
                 }

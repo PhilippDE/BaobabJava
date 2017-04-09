@@ -8,11 +8,16 @@ public class OSDependingData {
 
 
     private static String fileViewer;
-
+    @SuppressWarnings("WeakerAccess")
+    static boolean isWindows;
+    @SuppressWarnings("WeakerAccess")
+    static boolean isMac;
+    @SuppressWarnings("WeakerAccess")
+    static boolean isLinux;
     static {
-        boolean isWindows = System.getProperty("os.name").contains("Windows");
-        boolean isMac = System.getProperty("os.name").contains("mac");
-        boolean isLinux = System.getProperty("os.name").contains("nix") || System.getProperty("os.name").contains("nux")
+        isWindows= System.getProperty("os.name").contains("Windows");
+        isMac= System.getProperty("os.name").contains("mac");
+        isLinux= System.getProperty("os.name").contains("nix") || System.getProperty("os.name").contains("nux")
                 || System.getProperty("os.name").contains("aix");
 
         if(isLinux)

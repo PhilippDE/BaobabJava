@@ -105,8 +105,8 @@ public class Node{
                 if(Thread.interrupted()) {
                     return;
                 }
-                if(Settings.multiThreading) {
-                    Threadmanager.addThread(new CalculateThread(subNode,progress));
+                if(Settings.multiThreadingProcessing) {
+                    Threadmanager.addThreadProcessing(new CalculateThread(subNode,progress));
                 }else{
                     subNode.calculateSubnodesInner(progress);
                 }
@@ -140,11 +140,18 @@ public class Node{
         }
         File[] subDirectories=getSubdirectories(this.ownPath);
         progress.setText("Mapping path: "+this.ownPath.getAbsolutePath());
-        for(int i=0;i<subNodes.length;i++){
-            if(Thread.interrupted()) {
-                return;
+        if(subDirectories!=null && subDirectories.length!=0) {
+            for (int i = 0; i < subNodes.length; i++) {
+                if (Thread.interrupted()) {
+                    return;
+                }
+                try {
+                    subNodes[i] = new Node(subDirectories[i], this);
+                }catch(ArrayIndexOutOfBoundsException ex){
+                    System.err.println("Out of bounds Exception with path: "+this.getName()+" , subnode :"
+                    +subDirectories[i]+" index: "+ i+" length: "+subDirectories.length);
+                }
             }
-            subNodes[i]=new Node(subDirectories[i], this);
         }
         if(this.subNodes.length<1){
             this.size=getSizeofFiles(this.ownPath);
@@ -186,7 +193,6 @@ public class Node{
     public void createDetailedViewWindow(){
         new NodeView(this);
     }
-
 
     /***
      * Checks how many files the folder contains.
@@ -267,7 +273,7 @@ public class Node{
                 if (cur.isFile()) {
                     try {
                         size += Files.size(cur.toPath());
-                    } catch (IOException e) {
+                    } catch (IOException  e) {
                         e.printStackTrace();
                     }
                 }
@@ -288,7 +294,11 @@ public class Node{
         return f.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return file.isDirectory();
+                try {
+                    return file.isDirectory()&&!isSymlink(file);
+                } catch (IOException e) {
+                    return file.isDirectory();
+                }
             }
         });
     }
@@ -304,7 +314,11 @@ public class Node{
             return f.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    return file.isDirectory();
+                    try {
+                        return file.isDirectory()&&!isSymlink(file);
+                    } catch (IOException e) {
+                        return file.isDirectory();
+                    }
                 }
             }).length;
         }catch(NullPointerException ignored){
@@ -325,6 +339,25 @@ public class Node{
         long parentSize = parent.getSize();
         long ownSize = getSize();
         return (double)ownSize/parentSize;
+    }
+
+    /**
+     * Determines if the given file is a link.
+     * @param file the file to be checked
+     * @return true if file is a symlink
+     * @throws IOException IOException when path cant be resolved
+     */
+    public static boolean isSymlink(File file) throws IOException {
+        if (file == null)
+            throw new NullPointerException("File must not be null");
+        File canon;
+        if (file.getParent() == null) {
+            canon = file;
+        } else {
+            File canonDir = file.getParentFile().getCanonicalFile();
+            canon = new File(canonDir, file.getName());
+        }
+        return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
     }
 
     /**

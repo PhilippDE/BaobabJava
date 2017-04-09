@@ -6,12 +6,17 @@ package Data;
  */
 public final class Settings {
 
-    public static boolean multiThreading=true;
+    public static boolean multiThreadingProcessing=true;
 
-    public static int threadCountLimit;
+    public static int threadCountLimitProcessing;
+
+    public static boolean multiThreadingTree =true;
+
+    public static int threadCountLimitTree;
 
     static{
-        threadCountLimit=Runtime.getRuntime().availableProcessors();
+        threadCountLimitProcessing =Runtime.getRuntime().availableProcessors();
+        threadCountLimitTree=Runtime.getRuntime().availableProcessors();
     }
 
     private Settings(){}
