@@ -45,6 +45,7 @@ public class Node{
             this.node=node;
             this.progress=progress;
             this.setListener(Threadmanager.getListener());
+            this.setName(node.getName());
         }
 
         @Override

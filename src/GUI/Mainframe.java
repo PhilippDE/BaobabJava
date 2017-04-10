@@ -190,7 +190,7 @@ public class Mainframe extends JFrame {
         analyzesettingsSeperator=new JToolBar.Separator(new Dimension(25,20));
         toolBar.add(analyzesettingsSeperator);
 
-        settingshelpSeperator=new JToolBar.Separator(new Dimension(10, 20));
+        settingshelpSeperator=new JToolBar.Separator(new Dimension(25, 20));
         toolBar.add(settingshelpSeperator);
 
         helpButton=new JButton();
@@ -213,6 +213,7 @@ public class Mainframe extends JFrame {
             public void run() {
                 System.out.println("Started");
                 long start = System.currentTimeMillis();
+                long logstart=start;
                 supernode = node;
 
                 instance.sunview.disable();
@@ -233,11 +234,6 @@ public class Mainframe extends JFrame {
                     }
                     supernode.calculateSubnodes(instance.progressLabel);
                     instance.progressLabel.setText("Calculating sizes");
-                    System.out.println(String.format("%d min, %d sec",
-                            TimeUnit.MILLISECONDS.toMinutes(millis),
-                            TimeUnit.MILLISECONDS.toSeconds(millis) -
-                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-                    ));
 
                     //Checking if interrupted so thread stops
                     if(Thread.interrupted()) {
@@ -245,12 +241,13 @@ public class Mainframe extends JFrame {
                     }
                     supernode.calculateSize();
                     instance.progressLabel.setText("Sorting nodes");
-                    millis = System.currentTimeMillis() - start;
-                    System.out.println(String.format("%d min, %d sec",
+                    millis = System.currentTimeMillis() - logstart;
+                    System.out.println("Finished calculating nodes in: \n      "+String.format("%d min, %d sec",
                             TimeUnit.MILLISECONDS.toMinutes(millis),
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+                    logstart=System.currentTimeMillis();
 
                     //Checking if interrupted so thread stops
                     if(Thread.interrupted()) {
@@ -258,24 +255,27 @@ public class Mainframe extends JFrame {
                     }
                     supernode.sortNodesSizeReversed();
                     instance.progressLabel.setText("Preparing visualization");
-                    millis = System.currentTimeMillis() - start;
-                    System.out.println(String.format("%d min, %d sec",
+                    millis = System.currentTimeMillis() - logstart;
+                    System.out.println("Finished sorting nodes in: \n      "+String.format("%d min, %d sec",
                             TimeUnit.MILLISECONDS.toMinutes(millis),
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+                    logstart=System.currentTimeMillis();
+
 
                     //Checking if interrupted so thread stops
                     if(Thread.interrupted()) {
                         return;
                     }
                     SunviewPanel.setColorsBasedOnAngle(supernode);
-                    millis = System.currentTimeMillis() - start;
-                    System.out.println(String.format("%d min, %d sec",
+                    millis = System.currentTimeMillis() - logstart;
+                    System.out.println("Finished calculating colors in: \n      "+String.format("%d min, %d sec",
                             TimeUnit.MILLISECONDS.toMinutes(millis),
                             TimeUnit.MILLISECONDS.toSeconds(millis) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     ));
+
                 }
                 //Checking if interrupted so thread stops
                 if(Thread.interrupted()) {
@@ -297,6 +297,11 @@ public class Mainframe extends JFrame {
                                 TimeUnit.MILLISECONDS.toSeconds(finalMillis+millTree) -
                                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(finalMillis+millTree)))
                         );
+                        System.out.println("Finished complete procedure in:  "+String.format("%d min, %d sec",
+                                TimeUnit.MILLISECONDS.toMinutes(finalMillis),
+                                TimeUnit.MILLISECONDS.toSeconds(finalMillis) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(finalMillis))
+                        ));
                     }
                 };
                 instance.treeview.showNode(supernode,threadListener);

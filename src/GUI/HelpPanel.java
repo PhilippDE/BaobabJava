@@ -51,6 +51,7 @@ public class HelpPanel extends JFrame {
             BufferedImage image = ImageIO.read(new File("./res/TreeViewScreenshot.jpg"));
             treeviewImageLabel = new JLabel(new ImageIcon(image));
         } catch (IOException e) {
+            treeviewImageLabel=new JLabel();
             e.printStackTrace();
         }
 
@@ -63,7 +64,7 @@ public class HelpPanel extends JFrame {
         treeviewTextArea.setBackground(rootPanel.getBackground());
         treeviewTextArea.setText("The tree view can be compared to a normal file browser. The difference is that you have a bar on the right which shows " +
                                  "you how much space a folder uses of the upper folder. The bar of a folder has the same color as the folder has in the sun view. " +
-                                 "A right click on a tree item opens a context menu with more options.");
+                                 "\nA right click on a tree item opens a context menu with more options.");
 
         sunviewTitleLabel = new JLabel();
         sunviewTitleLabel.setFont(GraphicsConstants.standardFontLarger);
@@ -72,6 +73,7 @@ public class HelpPanel extends JFrame {
             BufferedImage image = ImageIO.read(new File("./res/SunViewScreenshot.jpg"));
             sunviewImageLabel = new JLabel(new ImageIcon(image));
         } catch (IOException e) {
+            sunviewImageLabel=new JLabel();
             e.printStackTrace();
         }
 

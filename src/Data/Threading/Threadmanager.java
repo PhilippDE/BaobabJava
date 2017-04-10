@@ -52,7 +52,8 @@ public final class Threadmanager implements ThreadFinishedListener{
                     }
                 }
                 catch (ConcurrentModificationException ignored) {
-                    System.err.println("CCM \n      in Threadmanager adding to processing list");
+                    System.err.println("ConcurrentModificationException in class Threadmanager " +
+                            " \n      in addThreadProcessing()");
                     flag=true;
                 }
             }
@@ -92,7 +93,9 @@ public final class Threadmanager implements ThreadFinishedListener{
                     }
                 }
                 catch (ConcurrentModificationException ignored) {
-                    System.err.println("CCM \n      in Threadmanager adding to tree list");
+                    System.err.println("ConcurrentModificationException in class Threadmanager " +
+                            " \n      in addThreadTree()");
+
                     flag=true;
                 }
             }
@@ -114,7 +117,7 @@ public final class Threadmanager implements ThreadFinishedListener{
 
     @Override
     public void notifyThreadFinished(NotifyingThread thread) {
-        if(threadsProcessing.contains(thread)) {
+        if (threadsProcessing.contains(thread)) {
             threadsProcessing.remove(thread);
             int count = 0;
             if (!end) {
@@ -127,22 +130,28 @@ public final class Threadmanager implements ThreadFinishedListener{
                                 count++;
                             } else {
                                 if (count < threadCountLimitProcessing) {
-                                    try {
-                                        t.start();
-                                    } catch (IllegalThreadStateException ignored) {
-
+                                    if (t.getState() == Thread.State.TERMINATED) {
+                                        threadsProcessing.remove(t);
+                                    } else {
+                                        try {
+                                            if (t.getState() == Thread.State.NEW) {
+                                                t.start();
+                                            }
+                                        } catch (IllegalThreadStateException ignored) {
+                                        }
                                     }
                                     count++;
                                 }
                             }
                         }
                     } catch (ConcurrentModificationException ignored) {
-                        System.err.println("CCM \n      in Threadmanager notification of processing list thread");
+                        System.err.println("ConcurrentModificationException in class Threadmanager \n" +
+                                "      in  notifyThreadFinished() in processing Processingthread list");
                         flag = true;
                     }
                 }
             }
-        }else if(threadsTree.contains(thread)){
+        } else if (threadsTree.contains(thread)) {
             threadsTree.remove(thread);
             int count = 0;
             if (!end) {
@@ -155,17 +164,23 @@ public final class Threadmanager implements ThreadFinishedListener{
                                 count++;
                             } else {
                                 if (count < threadCountLimitProcessing) {
-                                    try {
-                                        t.start();
-                                    } catch (IllegalThreadStateException ignored) {
-
+                                    if (t.getState() == Thread.State.TERMINATED) {
+                                        threadsProcessing.remove(t);
+                                    } else {
+                                        try {
+                                            if (t.getState() == Thread.State.NEW) {
+                                                t.start();
+                                            }
+                                        } catch (IllegalThreadStateException ignored) {
+                                        }
                                     }
                                     count++;
                                 }
                             }
                         }
                     } catch (ConcurrentModificationException ignored) {
-                        System.err.println("CCM \n      in Threadmanager notification of tree list thread");
+                        System.err.println("ConcurrentModificationException in class Threadmanager \n" +
+                                "      in  notifyThreadFinished()  in processing of Treethread list");
                         flag = true;
                     }
                 }

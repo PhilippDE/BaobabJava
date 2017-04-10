@@ -210,7 +210,6 @@ public class TreeviewPanel implements DataVisualizer {
                 treeNode.add(newTreeNode);
                 n.setTreePath(getPath(newTreeNode));
                 // if the subnode contains subnodes add them too
-                 System.out.println("Creating thread for path"+n.getName());
                 threads[count] = new TreeThread(n, newTreeNode);
                 Threadmanager.addThreadTree(threads[count]);
                 processed[count]=true;
@@ -256,6 +255,9 @@ public class TreeviewPanel implements DataVisualizer {
             flag=false;
             for (TreeThread t : threads) {
                 if (t!=null&&!t.isFinished()) {
+                    if(t.getState()== Thread.State.TERMINATED){
+                        System.out.println("Thread teriminated but did not finish!");
+                    }
                     flag=true;
                     System.out.println(t.own.getName());
                 }

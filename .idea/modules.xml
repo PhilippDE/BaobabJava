@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BaobabJava.iml" filepath="$PROJECT_DIR$/BaobabJava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer.iml" filepath="$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer_main.iml" filepath="$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer_main.iml" group="javaDiskUsageAnalyzer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer_test.iml" filepath="$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer_test.iml" group="javaDiskUsageAnalyzer" />
     </modules>
   </component>
 </project>

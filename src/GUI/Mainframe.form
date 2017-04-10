@@ -113,6 +113,7 @@
             <properties>
               <focusable value="false"/>
               <requestFocusEnabled value="false"/>
+              <separatorSize width="10" height="20"/>
               <visible value="true"/>
             </properties>
           </component>
@@ -141,11 +142,15 @@
           </component>
           <component id="6b48f" class="javax.swing.JToolBar$Separator" binding="settingshelpSeperator" custom-create="true">
             <constraints/>
-            <properties/>
+            <properties>
+              <preferredSize width="20" height="20"/>
+              <separatorSize width="20" height="20"/>
+            </properties>
           </component>
           <component id="59413" class="javax.swing.JButton" binding="helpButton" custom-create="true">
             <constraints/>
             <properties>
+              <focusable value="false"/>
               <text value="Help"/>
             </properties>
           </component>
