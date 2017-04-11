@@ -127,7 +127,24 @@ public class Mainframe extends JFrame {
                                 break;
                         }
                     }
-                    if (!pathChangedSinceLastAnalysis) return;
+                    if (!pathChangedSinceLastAnalysis){
+                        Object[] options = {"Yes",
+                                "No"};
+                        int n = JOptionPane.showOptionDialog(Mainframe.this,
+                                "Analyze directory again ?",
+                                "",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,     //do not use a custom Icon
+                                options,  //the titles of buttons
+                                options[0]); //default button title");
+                        if(n==JOptionPane.OK_OPTION){
+                            supernode=new Node(supernode.getOwnPath());
+                            currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
+                            processNode(supernode);
+                        }
+                        return;
+                    }
                     pathChangedSinceLastAnalysis = false;
                     currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
                     processNode(supernode);
@@ -145,6 +162,7 @@ public class Mainframe extends JFrame {
                     enableComponents();
                     threadStarted=false;
                     progressLabel.setText("Ready");
+                    pathChangedSinceLastAnalysis = true;
                 }
             }
         });
