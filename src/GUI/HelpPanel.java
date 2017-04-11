@@ -46,13 +46,14 @@ public class HelpPanel extends JFrame {
 
         treeviewTitleLabel = new JLabel();
         treeviewTitleLabel.setFont(GraphicsConstants.standardFontLarger);
-
+        ImageIcon image=new ImageIcon();
         try {
-            BufferedImage image = ImageIO.read(new File("./res/TreeViewScreenshot.jpg"));
-            treeviewImageLabel = new JLabel(new ImageIcon(image));
-        } catch (IOException e) {
-            treeviewImageLabel=new JLabel();
-            e.printStackTrace();
+            try {
+                image =  new ImageIcon(getClass().getClassLoader().getResource("res/TreeViewScreenshot.jpg"));
+            }catch(NullPointerException ignored){
+            }
+        } finally {
+            treeviewImageLabel = new JLabel(image);
         }
 
 
@@ -70,11 +71,12 @@ public class HelpPanel extends JFrame {
         sunviewTitleLabel.setFont(GraphicsConstants.standardFontLarger);
 
         try {
-            BufferedImage image = ImageIO.read(new File("./res/SunViewScreenshot.jpg"));
-            sunviewImageLabel = new JLabel(new ImageIcon(image));
-        } catch (IOException e) {
-            sunviewImageLabel=new JLabel();
-            e.printStackTrace();
+            try {
+                image =  new ImageIcon(getClass().getClassLoader().getResource("res/SunViewScreenshot.jpg"));
+            }catch(NullPointerException ignored){
+            }
+        } finally {
+            sunviewImageLabel = new JLabel(image);
         }
 
         sunviewTextArea = new JTextArea();
