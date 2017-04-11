@@ -5,6 +5,8 @@ import Data.Node;
 import javax.swing.*;
 import java.awt.*;
 
+import static GUI.GraphicsConstants.getScaleFactor;
+
 /**
  * This window will show all information about the passed node object
  * Created by Marcel on 05.04.2017.
@@ -60,6 +62,7 @@ public class NodeView extends JFrame {
         sizeLabel.setMaximumSize(new Dimension(GraphicsConstants.nameLabelX, GraphicsConstants.nameLabelY));
 
         fullPathArea = new JTextArea();
+        fullPathArea.setMinimumSize(new Dimension(((int)getScaleFactor()*150),-1));
         fullPathArea.setFont(GraphicsConstants.standardFont);
         fullPathArea.setEditable(false);
         fullPathArea.setLineWrap(true);

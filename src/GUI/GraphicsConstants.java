@@ -1,6 +1,8 @@
 package GUI;
 
 import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 /**
  * This class holds all values and constants for the graphics, such as fonts or label sizes
@@ -12,7 +14,11 @@ class GraphicsConstants {
 
     static Font standardFontLarger=new Font("Arial",Font.PLAIN,16);
 
-    static Font  labelFont=new Font("",Font.PLAIN,16);
+    static Font labelFont=new Font("",Font.PLAIN,16);
+
+    static Font labelFontItalic=new Font("",Font.PLAIN,16);
+
+    static Font titleFont=new Font("",Font.PLAIN,16);
 
     static int nameLabelX=200;
     static int nameLabelY=40;
@@ -29,7 +35,7 @@ class GraphicsConstants {
     static int sunviewPrefferedFULLHDX=1200;
     static int sunviewPrefferedFULLHDY=1080;
 
-    static int treeviewPrefferedFULLHDX=400;
+    static int treeviewPrefferedFULLHDX=600;
     static int treeviewPrefferedFULLHDY=1080;
     static int treeRowHeight=22;
 
@@ -66,7 +72,29 @@ class GraphicsConstants {
         standardFont=new Font("Arial",Font.PLAIN,1+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
         standardFontLarger=new Font("Arial",Font.PLAIN,2+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
         labelFont=new Font("Arial",Font.PLAIN,1+(int)Math.ceil(fontSizeLabelFULLHD*scaleFactor));
+
+        titleFont=new Font("Arial",Font.ITALIC,3+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
+        Map attributes = titleFont.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        titleFont=titleFont.deriveFont(attributes);
+
+        labelFontItalic =new Font("Arial",Font.ITALIC,2+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
+
     }
+
+    public static double getScaleFactor(){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        double height = screenSize.getHeight();
+        double scaleFactor;
+        if(width/(double)WidthFULLHD>height/(double)HeightFULLHD){
+            scaleFactor=height/HeightFULLHD;
+        }else{
+            scaleFactor=(width/(double)WidthFULLHD);
+        }
+        return scaleFactor;
+    }
+
 
     static {
         update();
