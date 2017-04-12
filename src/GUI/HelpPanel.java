@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 import static GUI.GraphicsConstants.getScaleFactor;
 
@@ -32,6 +33,12 @@ public class HelpPanel extends JFrame {
     private JButton gotoThirdSectionButton;
     private JLabel diagrammsectionTitle;
     private JLabel howtoSectionHeader;
+    private JLabel screenshotprogramlabel;
+
+    Image programscreenshot=new BufferedImage(860,458,BufferedImage.TYPE_INT_RGB);
+    Image treeviewscreenshot=new BufferedImage(400,458,BufferedImage.TYPE_INT_RGB);
+    Image sunviewscreenshot=new BufferedImage(600,458,BufferedImage.TYPE_INT_RGB);
+
 
     private static final int frameWidth=880;
     private static final int frameHeight=530;
@@ -72,10 +79,22 @@ public class HelpPanel extends JFrame {
 
         contentPanel=new JPanel();
         contentScroll=new JScrollPane();
+        contentScroll.getVerticalScrollBar().setUnitIncrement(16);
 
         helptitlelabel =new JLabel();
         helptitlelabel.setFont(GraphicsConstants.titleFontLarge);
         helptitlelabel.setText("Overview");
+
+        ImageIcon image=new ImageIcon();
+        try {
+            try {
+                image =  new ImageIcon(getClass().getClassLoader().getResource("res/ProgramScreenshot.PNG"));
+                programscreenshot=getFittingImage(image.getImage(),860,458);
+            }catch(NullPointerException ignored){
+            }
+        } finally {
+            screenshotprogramlabel = new JLabel(new ImageIcon(getFittingImage(image.getImage(),800,458)));
+        }
 
         helpIntroductionArea=new JTextArea();
         initiliazeArea(helpIntroductionArea);
@@ -85,8 +104,8 @@ public class HelpPanel extends JFrame {
 
         helpIntroductionFirstSectionLabel = new JTextArea();
         initiliazeArea(helpIntroductionFirstSectionLabel);
-        helpIntroductionFirstSectionLabel.setText("The first section is the \"How to use\" section. In this section the basic functionality of this program and how to use it will be explained." +
-                "In here the basics of how to use this program wil be covered. If you are new to this software you should definitely read that section");
+        helpIntroductionFirstSectionLabel.setText("The first section is the \"How to use\" section. In this section the basic functionality of this program will be explained and the basics of the program will be covered" +
+                "If you are new to this software you should read that section");
 
         gotoFirstSectionButton=new JButton();
         gotoFirstSectionButton.setFont(GraphicsConstants.standardFont);
@@ -127,6 +146,10 @@ public class HelpPanel extends JFrame {
         howtoSectionHeader.setFont(GraphicsConstants.titleFontLarge);
         howtoSectionHeader.setText("How to use this program");
 
+
+
+
+
         diagrammsectionTitle=new JLabel();
         diagrammsectionTitle.setFont(GraphicsConstants.titleFontLarge);
         diagrammsectionTitle.setText("Diagrams");
@@ -141,14 +164,14 @@ public class HelpPanel extends JFrame {
         treeviewTitleLabel.setFont(GraphicsConstants.titleFont);
         treeviewTitleLabel.setText("Tree view");
 
-        ImageIcon image=new ImageIcon();
+        image=new ImageIcon();
         try {
             try {
-                image =  new ImageIcon(getClass().getClassLoader().getResource("res/TreeViewScreenshot.jpg"));
+                image =  new ImageIcon(getClass().getClassLoader().getResource("res/TreeViewScreenshot.PNG"));
             }catch(NullPointerException ignored){
             }
         } finally {
-            treeviewImageLabel = new JLabel(image);
+            treeviewImageLabel = new JLabel(new ImageIcon(getFittingImage(image.getImage(),309,458)));
         }
 
 
@@ -166,11 +189,11 @@ public class HelpPanel extends JFrame {
 
         try {
             try {
-                image =  new ImageIcon(getClass().getClassLoader().getResource("res/SunViewScreenshot.jpg"));
+                image =  new ImageIcon(getClass().getClassLoader().getResource("res/SunViewScreenshot.PNG"));
             }catch(NullPointerException ignored){
             }
         } finally {
-            sunviewImageLabel = new JLabel(image);
+            sunviewImageLabel = new JLabel(new ImageIcon(getFittingImage(image.getImage(),700,526)));
         }
 
         sunviewTextArea = new JTextArea();
@@ -189,6 +212,37 @@ public class HelpPanel extends JFrame {
         area.setWrapStyleWord(true);
         area.setLineWrap(true);
         area.setBackground(rootPanel.getBackground());
+    }
+
+
+    /**
+     * Converts a given Image into a BufferedImage
+     *
+     * @param img The Image to be converted
+     * @return The converted BufferedImage
+     */
+    public static BufferedImage toBufferedImage(Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+
+    public static Image getFittingImage(Image image,int width,int height){
+        return image.getScaledInstance(width, height,
+                Image.SCALE_SMOOTH);
     }
 
 }
