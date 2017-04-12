@@ -359,6 +359,8 @@ public class Mainframe extends JFrame {
         analyzeButton.setText("Analyze");
     }
     public static void main(String[] args) {
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e) {

@@ -20,6 +20,8 @@ class GraphicsConstants {
 
     static Font titleFont=new Font("",Font.PLAIN,16);
 
+    static Font titleFontLarge=new Font("",Font.PLAIN,16);
+
     static int nameLabelX=200;
     static int nameLabelY=40;
 
@@ -76,7 +78,9 @@ class GraphicsConstants {
         titleFont=new Font("Arial",Font.ITALIC,3+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
         Map attributes = titleFont.getAttributes();
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        titleFont=titleFont.deriveFont(attributes);
+        titleFont=titleFont.deriveFont(attributes)     ;
+        titleFontLarge=new Font("Arial",Font.ITALIC,7+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
+        titleFontLarge=titleFontLarge.deriveFont(attributes);
 
         labelFontItalic =new Font("Arial",Font.ITALIC,2+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
 
