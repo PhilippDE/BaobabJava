@@ -79,7 +79,9 @@ class GraphicsConstants {
         Map attributes = titleFont.getAttributes();
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         titleFont=titleFont.deriveFont(attributes)     ;
-        titleFontLarge=new Font("Arial",Font.ITALIC,7+(int)Math.ceil(fontSizeFULLHD*scaleFactor));
+        titleFontLarge=new Font("Arial",Font.ITALIC,7+(int)Math.ceil((fontSizeFULLHD)*scaleFactor));
+        attributes = titleFontLarge.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         titleFontLarge=titleFontLarge.deriveFont(attributes);
 
         labelFontItalic =new Font("Arial",Font.ITALIC,2+(int)Math.ceil(fontSizeFULLHD*scaleFactor));

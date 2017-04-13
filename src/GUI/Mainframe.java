@@ -10,12 +10,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
+ *
  * The main GUI of this program
  * Created by Marcel on 06.03.2017.
  */
+
 public class Mainframe extends JFrame {
 
 
@@ -70,9 +73,8 @@ public class Mainframe extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fs = new JFileChooser(new File("c:"));
+                fs.setDialogTitle("Choose directory");
                 fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                fs.setDialogTitle("save");
-                //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
                 int returnVal = fs.showSaveDialog(null);
                 switch (returnVal) {
                     case JFileChooser.APPROVE_OPTION:
@@ -97,6 +99,7 @@ public class Mainframe extends JFrame {
                         fs.setVisible(false);
                         break;
                 }
+                if(supernode!=null)
                 currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
             }
         });
@@ -108,10 +111,11 @@ public class Mainframe extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(analyzeButton.getText().equals("Analyze")) {
                     if (supernode == null) {
+                        java.util.Locale.setDefault(java.util.Locale.ENGLISH);
                         JFileChooser fs = new JFileChooser(new File("c:"));
+                        fs.setDialogTitle("Choose directory");
                         fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                        fs.setDialogTitle("save");
-                        //fs.setFileFilter(new FileNameExtensionFilter("Image", "jpeg","png"));
+                        fs.setDefaultLocale(Locale.ENGLISH);
                         int returnVal = fs.showSaveDialog(null);
                         switch (returnVal) {
                             case JFileChooser.APPROVE_OPTION:
@@ -127,7 +131,7 @@ public class Mainframe extends JFrame {
                                 break;
                         }
                     }
-                    if (!pathChangedSinceLastAnalysis){
+                    if (!pathChangedSinceLastAnalysis&&supernode!=null){
                         Object[] options = {"Yes",
                                 "No"};
                         int n = JOptionPane.showOptionDialog(Mainframe.this,
@@ -146,8 +150,10 @@ public class Mainframe extends JFrame {
                         return;
                     }
                     pathChangedSinceLastAnalysis = false;
-                    currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
-                    processNode(supernode);
+                    if(supernode!=null) {
+                        currentPathLabel.setText(supernode.getOwnPath().getAbsolutePath());
+                        processNode(supernode);
+                    }
                 }else if(analyzeButton.getText().equals("Cancel")){
 
                     //Code for restoring the default state after user chose to cancel calculating
@@ -272,7 +278,6 @@ public class Mainframe extends JFrame {
                         return;
                     }
                     supernode.sortNodesSizeReversed();
-                    instance.progressLabel.setText("Preparing visualization");
                     millis = System.currentTimeMillis() - logstart;
                     System.out.println("Finished sorting nodes in: \n      "+String.format("%d min, %d sec",
                             TimeUnit.MILLISECONDS.toMinutes(millis),
@@ -353,11 +358,13 @@ public class Mainframe extends JFrame {
         settingsButton.setEnabled(false);
         analyzeButton.setText("Cancel");
     }
+
     private void enableComponents() {
         chooseDirectoy.setEnabled(true);
         settingsButton.setEnabled(true);
         analyzeButton.setText("Analyze");
     }
+
     public static void main(String[] args) {
         System.setProperty("awt.useSystemAAFontSettings","on");
         System.setProperty("swing.aatext", "true");
