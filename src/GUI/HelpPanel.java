@@ -250,7 +250,7 @@ public class HelpPanel extends JFrame {
         initiliazeArea(headLabel);
         headLabel.setFont(GraphicsConstants.labelFontItalic);
         headLabel.setMinimumSize(new Dimension((int)(getScaleFactor()*frameWidth-100),(int)(getScaleFactor()*50)));
-        headLabel.setText("BaobabJava uses two different diagrams to visualize the file structure of the chosen directory, the tree diagram on the left and the sunburst diagram on the right.");
+        headLabel.setText("Jaobab uses two different diagrams to visualize the file structure of the chosen directory, the tree diagram on the left and the sunburst diagram on the right.");
 
         treeviewTitleLabel = new JLabel();
         treeviewTitleLabel.setFont(GraphicsConstants.titleFont);
