@@ -110,6 +110,7 @@ public class TreeviewPanel implements DataVisualizer {
         TreeThread(Node node, DefaultMutableTreeNode dfm){
             this.own=node;
             this.dfm=dfm;
+            this.setListener(Threadmanager.getListener());
         }
 
         @Override
