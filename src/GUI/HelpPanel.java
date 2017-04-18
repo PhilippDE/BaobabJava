@@ -111,11 +111,11 @@ public class HelpPanel extends JFrame {
         initiliazeArea(helpIntroductionArea);
         helpIntroductionArea.setText(
                 "This is the help of the program. In here the program, its usage and diagrams and its features will be explained." +
-                        "\n\n Below you will see the the parts of this help. By clicking on the fields below you will directly get to the corresponding part of the help" );
+                        "\n\n -Below you will see the parts of this help. By clicking on the fields below you will directly get to the corresponding part of the help." );
 
         helpIntroductionFirstSectionLabel = new JTextArea();
         initiliazeArea(helpIntroductionFirstSectionLabel);
-        helpIntroductionFirstSectionLabel.setText("The first section is the \"How to use\" section. In this section the basic functionality of this program will be explained and the basics of the program will be covered" +
+    helpIntroductionFirstSectionLabel.setText("The first section is the \"How to use\" section. In this section the basic functionality of this program will be explained and the basics of the program will be covered. " +
                 "If you are new to this software you should read that section");
 
         gotoFirstSectionButton=new JButton();
@@ -161,7 +161,7 @@ public class HelpPanel extends JFrame {
         initiliazeArea(howtoFirstParagraph);
         howtoFirstParagraph.setText("To start analyzing a directory you first must choose a directory." +
                         " In order to choose a directory you need to click on the \"Choose directory\" button," +
-                        " which is located in the toolbar in the top left corner of the program");
+                        " which is located in the toolbar in the top left corner of the program. You can also press the \"Analyze\" button in order to choose your path. Note that this only works when no directory has been chosen.");
 
         image=new ImageIcon();
         try {
@@ -209,9 +209,9 @@ public class HelpPanel extends JFrame {
         initiliazeArea(howtoThirdParagraph);
         howtoThirdParagraph.setText("The settings menu can be seen in the image below. In the settings menu you can enable or disable the use of multiple threads in order to " +
                 "complete the scan faster and create the tree diagram faster. By enabling multithreading the CPU usage may reach up to 100% for longer periods of time. " +
-                "In order to prevent that you can edit the maximum amount of threads that will be allowed to run during this process, where 1 thread would be equal to disabling multithreading." +
-                "The default settings chosen by the program represents the maximum amount of threads the processor is able to handle simultaneously while having each thread at maximum efficiency." +
-                "If you want to minimize the impact of the scan on your system, it is recommended to turn of both multithreading for scanning and creation of tree");
+                "In order to prevent that you can edit the maximum amount of threads that will be allowed to run during this process, where 1 thread would be equal to disabling multithreading. " +
+                "The default settings chosen by the program represents the maximum amount of threads the processor is able to handle simultaneously while having each thread at maximum efficiency. " +
+                "If you want to minimize the impact of the scan on your system, it is recommended to turn of both multithreading for scanning and creation of tree.");
 
         diagrammsectionTitle=new JLabel();
         diagrammsectionTitle.setFont(GraphicsConstants.titleFontLarge);
@@ -220,7 +220,7 @@ public class HelpPanel extends JFrame {
         howtoFourthParagraph=new JTextArea();
         initiliazeArea(howtoFourthParagraph);
         howtoFourthParagraph.setText("If you have chosen a directory and wish to scan the directory, you can simply press the analyze button. The progress can be controlled on the bottom of the program." +
-                "During the scanning and analyzing the label at the bottom will be updated with the latest information. The scanning and analyzing is done in 4 steps:" +
+                " During the scanning and analyzing the label at the bottom will be updated with the latest information. The scanning and analyzing is done in 4 steps:" +
                 "\n     1: Scanning of directory structure" +
                 "\n         During this step the label will be updated everytime a new directory is being scanned. This step usually takes up most of the time." +
                 "\n     2: Calculation of directory sizes" +
@@ -274,7 +274,7 @@ public class HelpPanel extends JFrame {
         treeviewTextArea.setPreferredSize(new Dimension((int)(getScaleFactor()*200),(int)(getScaleFactor()*textHeight)));
         initiliazeArea(treeviewTextArea);
         treeviewTextArea.setText("The tree view can be compared to a normal file browser. The difference is that you have a bar on the right which shows " +
-                                 "you how much space a folder uses of the upper folder. The bar of a folder has the same color as the folder has in the sun view. " +
+                                 "you how much space a folder uses in relation to the upper folder. The bar of a folder has the same color as the folder has in the sun view. " +
                                  "\n\nA right click on a tree item opens a context menu with more options.");
 
         sunviewTitleLabel = new JLabel();
@@ -296,9 +296,9 @@ public class HelpPanel extends JFrame {
         sunviewTextArea.setMinimumSize(new Dimension((int)(getScaleFactor()*200),(int)(getScaleFactor()*textHeight)));
         sunviewTextArea.setPreferredSize(new Dimension((int)(getScaleFactor()*200),(int)(getScaleFactor()*textHeight)));
         initiliazeArea(sunviewTextArea);
-        sunviewTextArea.setText("The sun view is a sunburst diagram, where the most an inner layer represents the parent directory of the layers outside of it. The larger the layer, the larger is the directory represented by it.  When the mouse goes over an item the property view " +
+        sunviewTextArea.setText("The sun view is a sunburst diagram, where the most inner layer represents the parent directory of the layers outside of it. The larger the layer, the larger is the directory represented by it.  When the mouse goes over an item the property view " +
                                 "on the left gives information about the selected folder. " +
-                "\n\nA left click on an item opens the path of it in the tree view and " +
+                "\n\nA left click on a layer opens the path of it in the tree view and " +
                                 "a right click opens a context menu with more options.");
     }
 
