@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BaobabJava.iml" filepath="$PROJECT_DIR$/BaobabJava.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer.iml" filepath="$PROJECT_DIR$/.idea/modules/javaDiskUsageAnalyzer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Jaobab.iml" filepath="$PROJECT_DIR$/Jaobab.iml" />
     </modules>
   </component>
 </project>
